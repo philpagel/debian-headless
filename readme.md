@@ -19,11 +19,13 @@ contribute code.
 
 ## In a nutshell
 
-* Get a netinst image
-* Edit Makefile (first couple of lines)
-* Build image
+    # Get a netinst image 
+    wget https://cdimage.debian.org/debian-cd/current/arm64/iso-cd/debian-9.5.0-arm64-netinst.iso
+    # Edit Makefile (first couple of lines)
+    vim Makefile
+    # Build image
     make
-* Write image to usb stick
+    # Write image to usb stick
     sudo make usb
     sudo make part
 
@@ -73,10 +75,10 @@ Insert a USB stick and find out its device file
 
 Write the image to the stick:
 
-sudo make usb
+    sudo make usb
 
 Add a FAT partition to the stick
 
-sudo make FAT
+    sudo make FAT
 
 
