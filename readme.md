@@ -44,9 +44,13 @@ Edit the makefile and set SOURCE and TARGET to match your image. e.g.
     SOURCE = debian-9.5.0-amd64-netinst.iso
     TARGET = debian-9.5.0-amd64-netinst-preseed.iso
     ARCH = amd
+    LABEL = debian-9.5.0-amd64-headless
+    USBDEV = /dev/sdc
 
 `ARCH` indicates the target processor architecture – e.g. `arm`, `amd`, ...
-This variable is used to construct the correct folder name (`install.amd`) for initrd.
+This variable is used to construct the correct folder name (`install.amd`) for
+initrd.  `LABEL` is the CD volume label and `USBDEV` is the device that
+represents you usb stick. The latter is needed for `make usb` and `make FAT`
 
 This script comes with a `preseed.cfg` file that contains the bare minimum for
 a headless installation. Feel free to modify it to your taste. For
@@ -81,4 +85,6 @@ Add a FAT partition to the stick
 
     sudo make FAT
 
+This may be useful if you need to add custom firmware files or anything else
+you would like to use during installation.
 

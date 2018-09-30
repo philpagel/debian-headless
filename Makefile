@@ -12,6 +12,7 @@ ARCH = amd
 # Volume label for the target ISO image
 LABEL = debian-9.5.0-amd64-headless
 
+# Where to find the usb drive
 USBDEV = /dev/sdc
 
 
