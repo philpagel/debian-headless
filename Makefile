@@ -35,8 +35,8 @@ unpack:
 	chmod -R +w ${TMP}
 
 isolinux:
-	# Create aminimal isolinux config
-	# no menu no prompt
+	# Create a minimal isolinux config
+	# no menu, no prompt
 	cp ${ISOLINUX.CFG} ${TMP}/isolinux/ 
 
 preseed:
@@ -68,7 +68,7 @@ qemu: ${TARGET}
 		-cdrom ${TARGET}
 
 usb:
-	# write the image ot usb stick
+	# write the image to usb stick
 	# this may require root permissions
 	dd if=${TARGET} of=${USBDEV} bs=4k
 	sync

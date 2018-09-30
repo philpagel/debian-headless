@@ -12,7 +12,7 @@ at least working for me. So here is my minimal and lazy solution to debian
 headless installation image building.  I mostly documented it for myself but
 maybe it's useful for someone out there.
 
-I have tested this with debian 9.5 (aka stretch) on a amd64 machine. I think
+I have tested this with debian 9.5 (aka stretch) on an amd64 machine. I think
 this should work with other versions (probably also ubuntu) and architectures
 but that is untested. If you have tested this please let me know and/or
 contribute code.
@@ -23,6 +23,8 @@ contribute code.
     wget https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-9.5.0-amd64-netinst.iso
     # Edit Makefile (first couple of lines)
     vim Makefile
+    # Edit preseed.cfg
+    vim preseed.cfg
     # Build image
     make
     # Write image to usb stick
@@ -49,11 +51,13 @@ Edit the makefile and set SOURCE and TARGET to match your image. e.g.
 
 `ARCH` indicates the target processor architecture – e.g. `arm`, `amd`, ...
 This variable is used to construct the correct folder name (`install.amd`) for
-initrd.  `LABEL` is the CD volume label and `USBDEV` is the device that
+initrd. `LABEL` is the CD volume label and `USBDEV` is the device that
 represents your usb stick. The latter is needed for `make usb` and `make FAT`
 
 This script comes with a `preseed.cfg` file that contains the bare minimum for
-a headless installation. Feel free to modify it to your taste. For
+a headless installation. You should edit this file to adapt it to your needs.
+E.g. the stock file will set your locale and keyboard map to German. This is
+also the place to configure the login password for the network installation for
 comprehensive information on preseeding study this:
 https://www.debian.org/releases/stable/i386/apb.html
 
@@ -92,7 +96,7 @@ you would like to use during installation.
 ## Installation
 
 Insert the USB stick (or CD) in the target system and power it up. Find out the
-IP adress of the machine (e.g. from the router/DHCP server). Alternatively,
+IP address of the machine (e.g. from the router/DHCP server). Alternatively,
 configure static IP in the preseed file. Once the system is up you should be
 able to ping it. Now log in and complete the installation:
 
