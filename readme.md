@@ -29,6 +29,7 @@ contribute code.
     make
     # Write image to usb stick
     sudo make usb
+    # Add a FAT32 partition on the remaining free space
     sudo make FAT
 
 
@@ -57,7 +58,7 @@ represents your usb stick. The latter is needed for `make usb` and `make FAT`
 This script comes with a `preseed.cfg` file that contains the bare minimum for
 a headless installation. You should edit this file to adapt it to your needs.
 E.g. the stock file will set your locale and keyboard map to German. This is
-also the place to configure the login password for the network installation for
+also the place to configure the login password for the network installation. For
 comprehensive information on preseeding study this:
 https://www.debian.org/releases/stable/i386/apb.html
 
@@ -69,7 +70,17 @@ https://www.debian.org/releases/stable/i386/apb.html
 
 ## Dry run it
 
+This step is optional but may save you a lot of trouble later on.
+
     make qemu
+
+This will fire up a QEMU session booting your new image. You can follow the
+boot process in the emulator and eventually connect to the installer like this:
+
+    ssh installer@localhost -p10022
+
+So you can test-drive the installation before walking over to the server room.
+
 
 ## Write to usb stick or burn cd
 
@@ -105,3 +116,6 @@ able to ping it. Now log in and complete the installation:
 The default password is `install` and can be configured in the preseeding file.
 Alternatively, set a host key in preseeding for passwordless login.
 
+BTW: my `presseed.cfg` assumes that we are connected via ethernet (as a server
+should be). If you want =to/must use a wifi connection you need to configure
+this. 
