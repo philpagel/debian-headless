@@ -27,7 +27,7 @@ contribute code.
     make
     # Write image to usb stick
     sudo make usb
-    sudo make part
+    sudo make FAT
 
 
 ## Download the debian installation image
@@ -50,7 +50,7 @@ Edit the makefile and set SOURCE and TARGET to match your image. e.g.
 `ARCH` indicates the target processor architecture – e.g. `arm`, `amd`, ...
 This variable is used to construct the correct folder name (`install.amd`) for
 initrd.  `LABEL` is the CD volume label and `USBDEV` is the device that
-represents you usb stick. The latter is needed for `make usb` and `make FAT`
+represents your usb stick. The latter is needed for `make usb` and `make FAT`
 
 This script comes with a `preseed.cfg` file that contains the bare minimum for
 a headless installation. Feel free to modify it to your taste. For
