@@ -13,6 +13,7 @@ ARCH = amd
 LABEL = debian-9.5.0-amd64-headless
 
 # Where to find the usb drive
+# Caution: if this is incorrect you may ruin your system!
 USBDEV = /dev/sdc
 
 

@@ -54,6 +54,8 @@ Edit the makefile and set SOURCE and TARGET to match your image. e.g.
 This variable is used to construct the correct folder name (`install.amd`) for
 initrd. `LABEL` is the CD volume label and `USBDEV` is the device that
 represents your usb stick. The latter is needed for `make usb` and `make FAT`
+Be **extra careful** to set `USBDEV` correctly! If you set it incorrectly, you may 
+overwrite your system disk!
 
 This script comes with a `preseed.cfg` file that contains the bare minimum for
 a headless installation. You should edit this file to adapt it to your needs.
