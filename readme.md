@@ -33,6 +33,18 @@ contribute code.
     sudo make FAT
 
 
+## Dependencies
+
+The Makefile use  few tools that need to be installed:
+
+* bsdtar
+* syslinux
+* cpio
+* genisoimage
+* dd
+* qemu-system
+* sfdisk
+
 ## Download the debian installation image
 
 Download the debian installation image (netinst) and put it in this folder.
@@ -42,11 +54,12 @@ https://www.debian.org/distrib/netinst
 
 ## Configure some things
 
-Edit the makefile and set SOURCE and TARGET to match your image. e.g.
+Edit the makefile and set some variables to match your situation. e.g.
 
     SOURCE = debian-9.5.0-amd64-netinst.iso
     TARGET = debian-9.5.0-amd64-netinst-preseed.iso
     ARCH = amd
+    QEMU = qemu-system-x86_64 
     LABEL = debian-9.5.0-amd64-headless
     USBDEV = /dev/sdc
 
@@ -54,8 +67,9 @@ Edit the makefile and set SOURCE and TARGET to match your image. e.g.
 This variable is used to construct the correct folder name (`install.amd`) for
 initrd. `LABEL` is the CD volume label and `USBDEV` is the device that
 represents your usb stick. The latter is needed for `make usb` and `make FAT`
-Be **extra careful** to set `USBDEV` correctly! If you set it incorrectly, you may 
-overwrite your system disk!
+Be **extra careful** to set `USBDEV` correctly! If you set it incorrectly, you
+may overwrite your system disk!  `QEMU` is the name of the qemu-system binary
+that matches the target architecture (optional).
 
 This script comes with a `preseed.cfg` file that contains the bare minimum for
 a headless installation. You should edit this file to adapt it to your needs.

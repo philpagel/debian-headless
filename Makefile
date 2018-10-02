@@ -9,12 +9,16 @@ ARCH = amd
 #ARCH = arm
 #ARCH = 386
 
+# QEMU binary (must match the target architecture)
+QEMU = qemu-system-x86_64
+
 # Volume label for the target ISO image
 LABEL = debian-9.5.0-amd64-headless
 
 # Where to find the usb drive
 # Caution: if this is incorrect you may ruin your system!
-USBDEV = /dev/sdc
+# uncomment and set carefully
+#USBDEV = /dev/sdc
 
 
 ##########################################################################
@@ -63,7 +67,7 @@ qemu: ${TARGET}
 	@echo "\nOnce the installer is in network console you can log in:"
 	@echo "    ssh installer@localhost -p10022\n"
 	# run qemu with forwarded ssh port
-	qemu-system-x86_64 -m 1024 \
+	${QEMU} -m 1024 \
 		-net user,hostfwd=tcp::10022-:22 \
 		-net nic \
 		-cdrom ${TARGET}
