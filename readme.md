@@ -94,6 +94,12 @@ Insert a USB stick and find out its device file
 
     lsblk
 
+Double check, that `USBDEV` ist set correctly in the Makefile.
+
+**Caution:** The next two steps will write to the device configured in the
+`USBDEV`. If you failed to set that correctly, you will overwrite whatever disk
+happens to be associated with that device!
+
 Write the image to the stick:
 
     sudo make usb
@@ -119,5 +125,5 @@ The default password is `install` and can be configured in the preseeding file.
 Alternatively, set a host key in preseeding for passwordless login.
 
 BTW: my `presseed.cfg` assumes that we are connected via ethernet (as a server
-should be). If you want =to/must use a wifi connection you need to configure
+should be). If you want to/must use a wifi connection you need to configure
 this. 
