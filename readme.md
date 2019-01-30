@@ -12,10 +12,14 @@ at least working for me. So here is my minimal and lazy solution to debian
 headless installation image building.  I mostly documented it for myself but
 maybe it's useful for someone out there.
 
-I have tested this with debian 9.5 (aka stretch) on an amd64 machine. I think
-this should work with other versions (probably also ubuntu) and architectures
-but that is untested. If you have tested this please let me know and/or
-contribute code.
+I have tested this with Debian 9.5 (aka stretch) on an amd64 machine (Lenovo
+Thinkcentre Tiny m600). I think this should work with other versions (probably
+also ubuntu) and architectures but that is untested. If you have tested this
+please let me know and/or contribute code.
+
+This does not currently support UEFI boot! So make sure that you system will use
+legacy boot, by default.
+
 
 ## In a nutshell
 
@@ -47,7 +51,7 @@ The Makefile use  few tools that need to be installed:
 
 ## Download the debian installation image
 
-Download the debian installation image (netinst) and put it in this folder.
+Download the Debian installation image (netinst) and put it in this folder.
 
 https://www.debian.org/distrib/netinst
 
@@ -73,9 +77,9 @@ that matches the target architecture (optional).
 
 This script comes with a `preseed.cfg` file that contains the bare minimum for
 a headless installation. You should edit this file to adapt it to your needs.
-E.g. the stock file will set your locale and keyboard map to German. This is
-also the place to configure the login password for the network installation. For
-comprehensive information on preseeding study this:
+E.g. the stock file will set your locale and keyboard map as well as assign a
+hostname. This is also the place to configure the login password for the
+network installation. For comprehensive information on preseeding study this:
 https://www.debian.org/releases/stable/i386/apb.html
 
 
@@ -128,6 +132,9 @@ you would like to use during installation.
 
 ## Installation
 
+At the moment, UEFI boot is not supported so make sure you system uses
+legacy boot, by default.
+
 Insert the USB stick (or CD) in the target system and power it up. Find out the
 IP address of the machine (e.g. from the router/DHCP server). Alternatively,
 configure static IP in the preseed file. Once the system is up you should be
@@ -135,9 +142,9 @@ able to ping it. Now log in and complete the installation:
 
     ssh installer@yourmachine
 
-The default password is `install` and can be configured in the preseeding file.
+The default password is `MyGreatSecret` and can be configured in the preseeding file.
 Alternatively, set a host key in preseeding for passwordless login.
 
-BTW: my `presseed.cfg` assumes that we are connected via ethernet (as a server
+BTW: my `preseed.cfg` assumes that we are connected via ethernet (as a server
 should be). If you want to/must use a wifi connection you need to configure
 this. 

@@ -1,13 +1,18 @@
 # Configure these
 
 # Name of source/target iso files
-SOURCE = debian-9.5.0-amd64-netinst.iso
-TARGET = debian-9.5.0-amd64-netinst-headless.iso
+SOURCE = debian-9.6.0-amd64-netinst.iso
+TARGET = debian-9.6.0-amd64-netinst-headless.iso
 
 # Processor architecture
 ARCH = amd
 #ARCH = arm
 #ARCH = 386
+
+# Preseeding file to use
+#PRESEED = preseed_en_US.cfg	# US locale and keyboard
+PRESEED = preseed_de_US.cfg		# US locale and keyboard, except country=DE
+#PRESEED = preseed_de_DE.cfg	# german locale andkeyboard
 
 # QEMU binary (must match the target architecture)
 QEMU = qemu-system-x86_64
@@ -18,8 +23,7 @@ LABEL = debian-9.5.0-amd64-headless
 # Where to find the usb drive
 # Caution: if this is incorrect you may ruin your system!
 # uncomment and set carefully
-#USBDEV = /dev/sdc
-
+USBDEV = /dev/sdc
 
 ##########################################################################
 # Nothing worth editing below this line
@@ -27,7 +31,6 @@ LABEL = debian-9.5.0-amd64-headless
 
 TMP = isofiles
 ISOLINUX.CFG = isolinux.cfg
-PRESEED = preseed.cfg
 
 
 all: unpack isolinux preseed md5 iso
@@ -57,7 +60,8 @@ md5:
 
 iso:
 	# create iso
-	genisoimage -V ${LABEL} -r -J -b isolinux/isolinux.bin -c isolinux/boot.cat \
+	genisoimage -V ${LABEL} \
+		-r -J -b isolinux/isolinux.bin -c isolinux/boot.cat \
 		-no-emul-boot -boot-load-size 4 -boot-info-table \
 		-o ${TARGET} ${TMP}
 	# fix MBR
@@ -90,5 +94,8 @@ clean:
 
 mrproper: clean
 	rm -f ${TARGET}
+
+help:
+	less readme.md
 
 # EOF
