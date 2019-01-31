@@ -1,39 +1,24 @@
-# Configure these
 
-# Name of source/target iso files
-SOURCE = debian-9.6.0-amd64-netinst.iso
-TARGET = debian-9.6.0-amd64-netinst-headless.iso
-
-# Processor architecture
-ARCH = amd
-#ARCH = arm
-#ARCH = 386
-
-# Preseeding file to use
-#PRESEED = preseed_en_US.cfg	# US locale and keyboard
-PRESEED = preseed_de_US.cfg		# US locale and keyboard, except country=DE
-#PRESEED = preseed_de_DE.cfg	# german locale andkeyboard
-
-# QEMU binary (must match the target architecture)
-QEMU = qemu-system-x86_64
-
-# Volume label for the target ISO image
-LABEL = debian-9.5.0-amd64-headless
-
-# Where to find the usb drive
-# Caution: if this is incorrect you may ruin your system!
-# uncomment and set carefully
-USBDEV = /dev/sdc
-
-##########################################################################
-# Nothing worth editing below this line
-##########################################################################
+include config.txt
 
 TMP = isofiles
 ISOLINUX.CFG = isolinux.cfg
 
 
-all: unpack isolinux preseed md5 iso
+help:
+	@echo "Usage:"
+	@echo
+	@echo "make all        Build the ISO"
+	@echo "make usb        Write ISO to USB device"
+	@echo "make FAT        Add a FAT partition ot the USB stick"
+	@echo "make qemu       Boot ISO in quemu for testing"
+	@echo "make clean      Cleanup all temporary files and folders"
+	@echo "make mrproper   like make clean but also remove the output ISO"
+	@echo
+	@echo "For details consult the readme.md file"
+	@echo
+
+all: clean unpack isolinux preseed md5 iso
 
 unpack:
 	mkdir ${TMP}
@@ -95,7 +80,5 @@ clean:
 mrproper: clean
 	rm -f ${TARGET}
 
-help:
-	less readme.md
 
 # EOF

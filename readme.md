@@ -25,15 +25,17 @@ legacy boot, by default.
 
     # Get a netinst image 
     wget https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-9.5.0-amd64-netinst.iso
-    # Edit Makefile (first couple of lines)
-    vim Makefile
+    # Edit config.txt
+    vim config.txt
     # Edit preseed.cfg
     vim preseed.cfg
     # Build image
-    make
+    make all
+    # OPTIONAL: test iso image in qemu
+    make qemu
     # Write image to usb stick
     sudo make usb
-    # Add a FAT32 partition on the remaining free space
+    # optional: Add a FAT32 partition on the remaining free space
     sudo make FAT
 
 
@@ -43,11 +45,12 @@ The Makefile use  few tools that need to be installed:
 
 * bsdtar
 * syslinux
+* syslinux-utils
 * cpio
 * genisoimage
 * dd
-* qemu-system
-* sfdisk
+* qemu-system (optional)
+* sfdisk (optional)
 
 ## Download the debian installation image
 
