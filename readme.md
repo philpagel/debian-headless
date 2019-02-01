@@ -27,10 +27,10 @@ legacy boot, by default.
     wget https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-9.5.0-amd64-netinst.iso
     # Edit config.txt
     vim config.txt
-    # Edit preseed.cfg
-    vim preseed.cfg
+    # Edit.create preseed-XXX.cfg 
+    vim preseed-XXX.cfg
     # Build image
-    make all
+    make image
     # OPTIONAL: test iso image in qemu
     make qemu
     # Write image to usb stick
@@ -41,16 +41,9 @@ legacy boot, by default.
 
 ## Dependencies
 
-The Makefile use  few tools that need to be installed:
+Make sure all necessary tools are installed:
 
-* bsdtar
-* syslinux
-* syslinux-utils
-* cpio
-* genisoimage
-* dd
-* qemu-system (optional)
-* sfdisk (optional)
+    sudo apt-get install bsdtar syslinux syslinux-utils cpio genisoimage coreutils qemu-system qemu-system-x86 util-linux
 
 ## Download the debian installation image
 
@@ -70,7 +63,7 @@ Edit the makefile and set some variables to match your situation. e.g.
     LABEL = debian-9.5.0-amd64-headless
     USBDEV = /dev/sdc
 
-`ARCH` indicates the target processor architecture – e.g. `arm`, `amd`, ...
+`ARCH` indicates the target processor architecture – `amd` or `386`
 This variable is used to construct the correct folder name (`install.amd`) for
 initrd. `LABEL` is the CD volume label and `USBDEV` is the device that
 represents your usb stick. The latter is needed for `make usb` and `make FAT`
@@ -78,12 +71,12 @@ Be **extra careful** to set `USBDEV` correctly! If you set it incorrectly, you
 may overwrite your system disk!  `QEMU` is the name of the qemu-system binary
 that matches the target architecture (optional).
 
-This script comes with a `preseed.cfg` file that contains the bare minimum for
-a headless installation. You should edit this file to adapt it to your needs.
-E.g. the stock file will set your locale and keyboard map as well as assign a
-hostname. This is also the place to configure the login password for the
-network installation. For comprehensive information on preseeding study this:
-https://www.debian.org/releases/stable/i386/apb.html
+This script comes with a few `preseed-xx_XX.cfg` files.  They contain the bare
+minimum for a headless installation. The files differ in the keymap and
+language settings. You may want to edit one of these files or create your own
+to adapt it to your needs. This is also the place to configure the login
+password for the network installation. For comprehensive information on
+preseeding study this: https://www.debian.org/releases/stable/i386/apb.html
 
 
 ## Build the ISO

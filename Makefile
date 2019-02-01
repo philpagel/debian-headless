@@ -1,24 +1,28 @@
-
 include config.txt
 
-TMP = isofiles
-ISOLINUX.CFG = isolinux.cfg
+TMP = tmp
+ISOLINUX.CFG.TEMPLATE = isolinux.cfg.template
 
 
 help:
+	@echo
+	@echo "Edit config.txt, first."
+	@echo "Then use the Makefile."
+	@echo
 	@echo "Usage:"
 	@echo
-	@echo "make all        Build the ISO"
-	@echo "make usb        Write ISO to USB device"
-	@echo "make FAT        Add a FAT partition ot the USB stick"
-	@echo "make qemu       Boot ISO in quemu for testing"
-	@echo "make clean      Cleanup all temporary files and folders"
-	@echo "make mrproper   like make clean but also remove the output ISO"
+	@echo "  make image      Build the ISO image"
+	@echo "  make qemu       Boot ISO image in qemu for testing (optional)"
+	@echo "  make usb        Write ISO to USB device (may need root permissions)"
+	@echo "  make FAT        Add a FAT partition ot the USB stick (optional, may need root permissions)"
+	@echo "  make clean      Clean up temp files and folders"
+	@echo "  make mrproper   make clean + remove the output ISO"
 	@echo
 	@echo "For details consult the readme.md file"
 	@echo
 
-all: clean unpack isolinux preseed md5 iso
+
+image: clean unpack isolinux preseed md5 iso
 
 unpack:
 	mkdir ${TMP}
@@ -28,19 +32,19 @@ unpack:
 	chmod -R +w ${TMP}
 
 isolinux:
-	# Create a minimal isolinux config
-	# no menu, no prompt
-	cp ${ISOLINUX.CFG} ${TMP}/isolinux/ 
+	# Create a minimal isolinux config. no menu, no prompt
+	sed "s/ARCH/${ARCH}/" ${ISOLINUX.CFG.TEMPLATE} > ${TMP}/isolinux/isolinux.cfg
 
 preseed:
 	# write the preseed file to initrd
 	gunzip ${TMP}/install.${ARCH}/initrd.gz
-	echo ${PRESEED} | cpio -H newc -o -A -F ${TMP}/install.${ARCH}/initrd
+	cp ${PRESEED} ${TMP}/preseed.cfg
+	cd ${TMP}; echo preseed.cfg | cpio -H newc -o -A -F install.${ARCH}/initrd
 	gzip ${TMP}/install.${ARCH}/initrd
+	rm ${TMP}/preseed.cfg
 
 md5:
 	# recreate the MD5 sums of all files
-	#find ${TMP}/ -follow -type f -exec md5sum {} \; > ${TMP}/md5sum.txt
 	find ${TMP}/ -type f -exec md5sum {} \; > ${TMP}/md5sum.txt
 
 iso:
@@ -49,10 +53,11 @@ iso:
 		-r -J -b isolinux/isolinux.bin -c isolinux/boot.cat \
 		-no-emul-boot -boot-load-size 4 -boot-info-table \
 		-o ${TARGET} ${TMP}
-	# fix MBR
+	# fix MBR for USB boot
 	isohybrid ${TARGET}
 
 qemu: ${TARGET}
+	@echo
 	@echo "\nOnce the installer is in network console you can log in:"
 	@echo "    ssh installer@localhost -p10022\n"
 	# run qemu with forwarded ssh port
@@ -72,6 +77,7 @@ FAT:
 	# e.g. for driver files
 	# this may require root permissions
 	echo " , , 0xb" | sfdisk ${USBDEV} -N 2
+	mkfs.vfat ${USBDEV}2
 
 
 clean:
