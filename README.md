@@ -87,7 +87,8 @@ preseeding study this: https://www.debian.org/releases/stable/i386/apb.html
 ## Build the ISO
 
     make clean
-    make
+    make image
+
 
 ## Dry run it
 
