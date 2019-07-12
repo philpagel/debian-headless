@@ -17,8 +17,8 @@ Thinkcentre Tiny m600). I think this should work with other versions (probably
 also ubuntu) and architectures but that is untested. If you have tested this
 please let me know and/or contribute code.
 
-This does not currently support UEFI boot! So make sure that you system will use
-legacy boot, by default.
+At this point, this does not currently support UEFI boot! So make sure that you
+system will use legacy boot, by default.
 
 
 ## In a nutshell
@@ -44,6 +44,10 @@ legacy boot, by default.
 Make sure all necessary tools are installed:
 
     sudo apt-get install bsdtar syslinux syslinux-utils cpio genisoimage coreutils qemu-system qemu-system-x86 util-linux
+
+Or 
+    make install-depends
+
 
 ## Download the debian installation image
 
