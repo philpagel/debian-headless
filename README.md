@@ -34,9 +34,9 @@ system will use legacy boot, by default.
     # OPTIONAL: test iso image in qemu
     make qemu
     # Write image to usb stick
-    sudo make usb
+    make usb
     # optional: Add a FAT32 partition on the remaining free space
-    sudo make FAT
+    make FAT
 
 
 ## Dependencies
@@ -46,6 +46,7 @@ Make sure all necessary tools are installed:
     sudo apt-get install bsdtar syslinux syslinux-utils cpio genisoimage coreutils qemu-system qemu-system-x86 util-linux
 
 Or 
+
     make install-depends
 
 
@@ -120,11 +121,11 @@ happens to be associated with that device!
 
 Write the image to the stick:
 
-    sudo make usb
+    make usb
 
 Add a FAT partition to the stick
 
-    sudo make FAT
+    make FAT
 
 This may be useful if you need to add custom firmware files or anything else
 you would like to use during installation.
