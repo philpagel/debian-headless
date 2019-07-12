@@ -11,16 +11,21 @@ help:
 	@echo
 	@echo "Usage:"
 	@echo
-	@echo "  make image      Build the ISO image"
-	@echo "  make qemu       Boot ISO image in qemu for testing (optional)"
-	@echo "  make usb        Write ISO to USB device (may need root permissions)"
-	@echo "  make FAT        Add a FAT partition ot the USB stick (optional, may need root permissions)"
-	@echo "  make clean      Clean up temp files and folders"
-	@echo "  make mrproper   make clean + remove the output ISO"
+	@echo "  make install-depends	install all dependencies"
+	@echo "  make image             Build the ISO image"
+	@echo "  make qemu              Boot ISO image in qemu for testing (optional)"
+	@echo "  make usb               Write ISO to USB device"
+	@echo "  make FAT               Add a FAT partition ot the USB stick (optiona)"
+	@echo "  make clean             Clean up temp files and folders"
+	@echo "  make mrproper          make clean + remove the output ISO"
 	@echo
 	@echo "For details consult the readme.md file"
 	@echo
 
+
+install-depends:
+	# install all dependencies
+	sudo apt-get install bsdtar syslinux syslinux-utils cpio genisoimage coreutils qemu-system qemu-system-x86 util-linux
 
 image: clean unpack isolinux preseed md5 iso
 
@@ -68,16 +73,27 @@ qemu: ${TARGET}
 
 usb:
 	# write the image to usb stick
-	# this may require root permissions
-	dd if=${TARGET} of=${USBDEV} bs=4k
-	sync
+	@echo "This will overwrite all data on ${USBDEV}!"
+	@read -p "type 'YES' if you really want me to do this:" proceed; \
+	if [ $$proceed = "YES" ] ; then \
+		sudo dd if=${TARGET} of=${USBDEV} bs=4k ; \
+		sync ; \
+	else \
+		echo "Aborting" ; \
+	fi
 
 FAT:
 	# add a FAT partition in the remaining free space 
 	# e.g. for driver files
-	# this may require root permissions
-	echo " , , 0xb" | sfdisk ${USBDEV} -N 2
-	mkfs.vfat ${USBDEV}2
+	@echo "This will overwrite ${USBDEV}!"
+	@read -p "type 'YES' if you really want me to do this:" proceed; \
+	if [ $$proceed = "YES" ] ; then \
+		echo " , , 0xb" | sudo sfdisk ${USBDEV} -N 2 ;\
+		sudo mkfs.vfat ${USBDEV}2 ;\
+		sync ;\
+	else \
+		echo "Aborting" ; \
+	fi
 
 
 clean:

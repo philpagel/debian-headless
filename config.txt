@@ -1,8 +1,8 @@
 # Configuration
 
 # Name of source and target iso filenames
-SOURCE = debian-9.7.0-amd64-netinst.iso
-TARGET = debian-9.7.0-amd64-netinst-headless.iso
+SOURCE = debian-10.0.0-amd64-netinst.iso
+TARGET = debian-10.0.0-amd64-netinst-headless.iso
 
 # Architecture settings
 # amd64
@@ -25,7 +25,7 @@ LABEL = debian-hdl-inst
 # uncomment and set carefully!
 # use lsusb and/or the output of dmesg after plugging in your usb drive
 # to find the correct device file
-#USBDEV = /dev/sdc
-USBDEV = /dev/null
+USBDEV = /dev/sdc
+#USBDEV = /dev/null
 
 # EOF
