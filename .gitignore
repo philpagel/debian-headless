@@ -1,0 +1,4 @@
+*.iso
+*.qcow
+preseed.cfg
+tmp/
