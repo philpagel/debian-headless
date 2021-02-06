@@ -23,18 +23,25 @@ system will use legacy boot, by default.
 
 ## In a nutshell
 
-    # Get a netinst image 
-    wget https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-9.5.0-amd64-netinst.iso
-    # Edit config.txt
-    vim config.txt
-    # Edit.create preseed-XXX.cfg 
-    vim preseed-XXX.cfg
+    # Get a netinst image
+    wget https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-10.7.0-amd64-netinst.iso
+
+    # Edit the configuration variables
+    vim Makevars
+
+    # Create and edit preseed.cfg
+    cp example-preseed.cfg preseed.cfg
+    vim preseed.cfg
+
     # Build image
     make image
+
     # OPTIONAL: test iso image in qemu
     make qemu
+
     # Write image to usb stick
     make usb
+
     # optional: Add a FAT32 partition on the remaining free space
     make FAT
 
@@ -42,10 +49,6 @@ system will use legacy boot, by default.
 ## Dependencies
 
 Make sure all necessary tools are installed:
-
-    sudo apt-get install bsdtar syslinux syslinux-utils cpio genisoimage coreutils qemu-system qemu-system-x86 util-linux
-
-Or 
 
     make install-depends
 
@@ -61,11 +64,11 @@ https://www.debian.org/distrib/netinst
 
 Edit the makefile and set some variables to match your situation. e.g.
 
-    SOURCE = debian-9.5.0-amd64-netinst.iso
-    TARGET = debian-9.5.0-amd64-netinst-preseed.iso
+    SOURCE = debian-10.7.0-amd64-netinst.iso
+    TARGET = debian-10.7.0-amd64-netinst-preseed.iso
     ARCH = amd
-    QEMU = qemu-system-x86_64 
-    LABEL = debian-9.5.0-amd64-headless
+    QEMU = qemu-system-x86_64
+    LABEL = debian-10.7.0-amd64-headless
     USBDEV = /dev/sdc
 
 `ARCH` indicates the target processor architecture – `amd` or `386`
@@ -76,12 +79,13 @@ Be **extra careful** to set `USBDEV` correctly! If you set it incorrectly, you
 may overwrite your system disk!  `QEMU` is the name of the qemu-system binary
 that matches the target architecture (optional).
 
-This script comes with a few `preseed-xx_XX.cfg` files.  They contain the bare
-minimum for a headless installation. The files differ in the keymap and
-language settings. You may want to edit one of these files or create your own
-to adapt it to your needs. This is also the place to configure the login
-password for the network installation. For comprehensive information on
-preseeding study this: https://www.debian.org/releases/stable/i386/apb.html
+An `example-preseed.cfg` file for Debian buster is included. This file can also
+be downloaded for other Debian releases (see Makefile). You may use
+`example-preseed.cfg` as a template to create a custom configuration file. This
+is also the place to configure the login password for the network installation.
+For comprehensive information on preseeding study this:
+
+<https://www.debian.org/releases/stable/amd64/apb.en.html>
 
 
 ## Build the ISO
@@ -144,9 +148,9 @@ able to ping it. Now log in and complete the installation:
 
     ssh installer@yourmachine
 
-The default password is `MyGreatSecret` and can be configured in the preseeding file.
+The default password is `r00tme` and can be configured in the preseeding file.
 Alternatively, set a host key in preseeding for passwordless login.
 
-BTW: my `preseed.cfg` assumes that we are connected via ethernet (as a server
-should be). If you want to/must use a wifi connection you need to configure
-this. 
+NOTE: The included `example-preseed.cfg` assumes that you are connected via
+ethernet (as a server should be). If you want to/must use a wifi connection you
+need to configure this.

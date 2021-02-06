@@ -1,8 +1,11 @@
 # Configuration
 
+# Used to download example-preseed.cfg for your target Debian release.
+RELEASE = buster
+
 # Name of source and target iso filenames
-SOURCE = debian-10.0.0-amd64-netinst.iso
-TARGET = debian-10.0.0-amd64-netinst-headless.iso
+SOURCE = debian-10.7.0-amd64-netinst.iso
+TARGET = debian-10.7.0-amd64-netinst-headless.iso
 
 # Architecture settings
 # amd64
@@ -13,12 +16,10 @@ QEMU = qemu-system-x86_64
 #QEMU = qemu-system-i386
 
 # Preseeding file to use
-#PRESEED = preseed-en_US.cfg	# US locale and keyboard
-PRESEED =  preseed-en_DE.cfg	# US locale and keyboard, except country=DE
-#PRESEED = preseed-de_DE.cfg	# german locale and keyboard
+PRESEED = preseed.cfg
 
 # Volume label for the target ISO image
-LABEL = debian-hdl-inst
+LABEL = debian-10.7.0-amd64-headless
 
 # Where to find the usb drive
 # Caution: if this is set incorrectly you may ruin your system!
@@ -28,4 +29,4 @@ LABEL = debian-hdl-inst
 USBDEV = /dev/sdc
 #USBDEV = /dev/null
 
-# EOF
+# vim: set syntax=make :
