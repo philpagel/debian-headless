@@ -11,13 +11,14 @@ help:
 	@echo
 	@echo "Usage:"
 	@echo
-	@echo "  make install-depends	Install dependencies"
-	@echo "  make image             Build the ISO image"
-	@echo "  make qemu              Boot ISO image in QEMU for testing (optional)"
-	@echo "  make usb               Write ISO to USB device"
-	@echo "  make FAT               Add a FAT partition ot the USB stick (optiona)"
-	@echo "  make clean             Clean up temporary files and folders"
-	@echo "  make maintainer-clean 	Make clean and remove the output ISO"
+	@echo "  make install-depends		Install dependencies"
+	@echo "  make example-preseed.cfg	download preseed.cfg from debian
+	@echo "  make image             	Build the ISO image"
+	@echo "  make qemu              	Boot ISO image in QEMU for testing (optional)"
+	@echo "  make usb               	Write ISO to USB device"
+	@echo "  make FAT               	Add a FAT partition ot the USB stick (optiona)"
+	@echo "  make clean             	Clean up temporary files and folders"
+	@echo "  make maintainer-clean 		Make clean and remove the output ISO"
 	@echo
 	@echo "For details consult the README.md file"
 	@echo
