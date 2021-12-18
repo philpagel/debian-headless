@@ -12,13 +12,8 @@ at least working for me. So here is my minimal and lazy solution to debian
 headless installation image building.  I mostly documented it for myself but
 maybe it's useful for someone out there.
 
-I have tested this with Debian 9.5 (aka stretch) on an amd64 machine (Lenovo
-Thinkcentre Tiny m600). I think this should work with other versions (probably
-also ubuntu) and architectures but that is untested. If you have tested this
-please let me know and/or contribute code.
-
-At this point, this does not currently support UEFI boot! So make sure that you
-system will use legacy boot, by default.
+At this point, this does not support UEFI boot! So make sure that you system
+will use legacy boot, by default.
 
 
 ## In a nutshell
@@ -30,7 +25,10 @@ system will use legacy boot, by default.
     vim Makevars
 
     # Create and edit preseed.cfg
-    cp example-preseed.cfg preseed.cfg
+    cp minimal-preseed.cfg preseed.cfg
+    # or
+    make example-preseed.cf
+
     vim preseed.cfg
 
     # Build image
@@ -62,16 +60,16 @@ https://www.debian.org/distrib/netinst
 
 ## Configure some things
 
-Edit the makefile and set some variables to match your situation. e.g.
+Edit the `Makevars` and set some variables to match your situation. E.g.
 
-    SOURCE = debian-10.7.0-amd64-netinst.iso
-    TARGET = debian-10.7.0-amd64-netinst-preseed.iso
+    SOURCE = debian-11.0.0-amd64-netinst.iso
+    TARGET = debian-11.0.0-amd64-netinst-preseed.iso
     ARCH = amd
     QEMU = qemu-system-x86_64
-    LABEL = debian-10.7.0-amd64-headless
+    LABEL = debian-headless
     USBDEV = /dev/sdc
 
-`ARCH` indicates the target processor architecture – `amd` or `386`
+`ARCH` indicates the target processor architecture – `amd` or `386` (**not** `i386`!)
 This variable is used to construct the correct folder name (`install.amd`) for
 initrd. `LABEL` is the CD volume label and `USBDEV` is the device that
 represents your usb stick. The latter is needed for `make usb` and `make FAT`
@@ -79,11 +77,13 @@ Be **extra careful** to set `USBDEV` correctly! If you set it incorrectly, you
 may overwrite your system disk!  `QEMU` is the name of the qemu-system binary
 that matches the target architecture (optional).
 
-An `example-preseed.cfg` file for Debian buster is included. This file can also
-be downloaded for other Debian releases (see Makefile). You may use
-`example-preseed.cfg` as a template to create a custom configuration file. This
-is also the place to configure the login password for the network installation.
-For comprehensive information on preseeding study this:
+A `minimal-preseed.cfg` file for Debian buster is included. That file
+configures the bare minimum to get past any installer questions before the ssh
+connection becomes available. To get a full `example-preeed.cfg` file directly
+from Debian, `make example-preseefd.cfg`. Use any of these files as a template
+to create a custom configuration file. This is also the place to configure the
+login password for the network installation.  For comprehensive information on
+preseeding study this:
 
 <https://www.debian.org/releases/stable/amd64/apb.en.html>
 
@@ -118,7 +118,7 @@ Insert a USB stick and find out its device file
 
     lsblk
 
-Double check, that `USBDEV` ist set correctly in the Makefile.
+**Double check**, that `USBDEV` is set correctly in `Makevars`.
 
 **Caution:** The next two steps will write to the device configured in the
 `USBDEV`. If you failed to set that correctly, you will overwrite whatever disk
@@ -138,8 +138,8 @@ you would like to use during installation.
 
 ## Installation
 
-At the moment, UEFI boot is not supported so make sure you system uses
-legacy boot, by default.
+At the moment, UEFI boot is not supported so make sure you system supports
+legacy boot.
 
 Insert the USB stick (or CD) in the target system and power it up. Find out the
 IP address of the machine (e.g. from the router/DHCP server). Alternatively,
@@ -151,6 +151,6 @@ able to ping it. Now log in and complete the installation:
 The default password is `r00tme` and can be configured in the preseeding file.
 Alternatively, set a host key in preseeding for passwordless login.
 
-NOTE: The included `example-preseed.cfg` assumes that you are connected via
+NOTE: The included `minimal-preseed.cfg` assumes that you are connected via
 ethernet (as a server should be). If you want to/must use a wifi connection you
 need to configure this.
