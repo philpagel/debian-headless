@@ -26,7 +26,7 @@ LABEL = debian-11.0.0-amd64-headless
 # uncomment and set carefully!
 # use lsusb and/or the output of dmesg after plugging in your usb drive
 # to find the correct device file
-USBDEV = /dev/sda
-#USBDEV = /dev/null
+#USBDEV = /dev/sda
+USBDEV = /dev/null
 
 # vim: set syntax=make :
