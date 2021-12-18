@@ -12,7 +12,7 @@ at least working for me. So here is my minimal and lazy solution to debian
 headless installation image building.  I mostly documented it for myself but
 maybe it's useful for someone out there.
 
-At this point, this does not support UEFI boot! So make sure that you system
+At this point, this does not support UEFI boot! So make sure that your system
 will use legacy boot, by default.
 
 
@@ -27,7 +27,7 @@ will use legacy boot, by default.
     # Create and edit preseed.cfg
     cp minimal-preseed.cfg preseed.cfg
     # or
-    make example-preseed.cf
+    make example-preseed.cfg
 
     vim preseed.cfg
 
@@ -148,9 +148,14 @@ able to ping it. Now log in and complete the installation:
 
     ssh installer@yourmachine
 
-The default password is `r00tme` and can be configured in the preseeding file.
-Alternatively, set a host key in preseeding for passwordless login.
+The default password is `r00tme` and can (and should!) be configured in the
+preseeding file.  Alternatively, set a host key in preseeding for passwordless
+login.
 
 NOTE: The included `minimal-preseed.cfg` assumes that you are connected via
 ethernet (as a server should be). If you want to/must use a wifi connection you
 need to configure this.
+
+The Debian installer uses `screen` in the ssh connection to provide multiple
+virtual consoles. You can switch between them with `CTRL-a TAB`. See `man
+screen` for more information.
