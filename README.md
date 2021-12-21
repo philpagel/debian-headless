@@ -8,12 +8,12 @@ installation without a key press, others seemed to customize a zillion things
 but ended up getting stuck in some error message or other.
 
 So I read my way through all of them and put together a slim working solution –
-at least working for me. So here is my minimal and lazy solution to debian
+at least working for me. So here is my minimal and lazy solution to Debian
 headless installation image building.  I mostly documented it for myself but
 maybe it's useful for someone out there.
 
 At this point, this does not support UEFI boot! So make sure that your system
-will use legacy boot, by default.
+supports legacy boot.
 
 
 ## In a nutshell
@@ -26,8 +26,6 @@ will use legacy boot, by default.
 
     # Create and edit preseed.cfg
     cp minimal-preseed.cfg preseed.cfg
-    # or
-    make example-preseed.cfg
 
     vim preseed.cfg
 
@@ -51,11 +49,14 @@ Make sure all necessary tools are installed:
     make install-depends
 
 
-## Download the debian installation image
+## Download the Debian installation image
 
-Download the Debian installation image (netinst) and put it in this folder.
+Create a work folder and download the Debian installation image (netinst):
 
-https://www.debian.org/distrib/netinst
+    mkdir foo
+    cd foo
+    
+    wget https://www.debian.org/distrib/netinst/...
 
 
 ## Configure some things
@@ -63,13 +64,13 @@ https://www.debian.org/distrib/netinst
 Edit the `Makevars` and set some variables to match your situation. E.g.
 
     SOURCE = debian-11.0.0-amd64-netinst.iso
-    TARGET = debian-11.0.0-amd64-netinst-preseed.iso
+    TARGET = debian-11.0.0-amd64-netinst-headless.iso
     ARCH = amd
     QEMU = qemu-system-x86_64
     LABEL = debian-headless
     USBDEV = /dev/sdc
 
-`ARCH` indicates the target processor architecture – `amd` or `386` (**not** `i386`!)
+`ARCH` indicates the target processor architecture – `amd` or `386` (*not* `i386`!)
 This variable is used to construct the correct folder name (`install.amd`) for
 initrd. `LABEL` is the CD volume label and `USBDEV` is the device that
 represents your usb stick. The latter is needed for `make usb` and `make FAT`
@@ -78,12 +79,12 @@ may overwrite your system disk!  `QEMU` is the name of the qemu-system binary
 that matches the target architecture (optional).
 
 A `minimal-preseed.cfg` file for Debian buster is included. That file
-configures the bare minimum to get past any installer questions before the ssh
+configures the bare minimum to get past the installer questions before the ssh
 connection becomes available. To get a full `example-preeed.cfg` file directly
-from Debian, `make example-preseefd.cfg`. Use any of these files as a template
+from Debian, `make example-preseed.cfg`. Use any of these files as a template
 to create a custom configuration file. This is also the place to configure the
-login password for the network installation.  For comprehensive information on
-preseeding study this:
+login password for the network installation. For comprehensive information on
+preseeding, study this:
 
 <https://www.debian.org/releases/stable/amd64/apb.en.html>
 
@@ -96,7 +97,7 @@ preseeding study this:
 
 ## Dry run it
 
-This step is optional but may save you a lot of trouble later on.
+This step is optional but may save you a lot of trouble later.
 
     make qemu
 
@@ -128,7 +129,7 @@ Write the image to the stick:
 
     make usb
 
-Add a FAT partition to the stick
+Add a FAT partition to the stick:
 
     make FAT
 
@@ -138,7 +139,7 @@ you would like to use during installation.
 
 ## Installation
 
-At the moment, UEFI boot is not supported so make sure you system supports
+At the moment, UEFI boot is not supported so make sure your system supports
 legacy boot.
 
 Insert the USB stick (or CD) in the target system and power it up. Find out the
@@ -148,7 +149,7 @@ able to ping it. Now log in and complete the installation:
 
     ssh installer@yourmachine
 
-The default password is `r00tme` and can (and should!) be configured in the
+The default password is `r00tme`; it can (and should!) be configured in the
 preseeding file.  Alternatively, set a host key in preseeding for passwordless
 login.
 
@@ -156,6 +157,6 @@ NOTE: The included `minimal-preseed.cfg` assumes that you are connected via
 ethernet (as a server should be). If you want to/must use a wifi connection you
 need to configure this.
 
-The Debian installer uses `screen` in the ssh connection to provide multiple
-virtual consoles. You can switch between them with `CTRL-a TAB`. See `man
-screen` for more information.
+And just because it took me a while to realize: The Debian installer uses
+`screen` in the ssh connection to provide multiple virtual consoles. You can
+switch between them with `CTRL-a TAB`. See `man screen` for more information.
