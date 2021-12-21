@@ -12,7 +12,7 @@ help:
 	@echo "Usage:"
 	@echo
 	@echo "  make install-depends		Install dependencies"
-	@echo "  make example-preseed.cfg	download preseed.cfg from debian
+	@echo "  make example-preseed.cfg	download preseed.cfg from Debian"
 	@echo "  make image             	Build the ISO image"
 	@echo "  make qemu              	Boot ISO image in QEMU for testing (optional)"
 	@echo "  make usb               	Write ISO to USB device"
