@@ -1,11 +1,11 @@
 # Debian headless/remote installation
 
-I wanted to do a headless installation for a server – i.e. without any keyboard
-access or the chance to peek at a temporarily connected screen. I found plenty
-of information on the net but none of the tutorials really worked for me. Some
-included preseeding the image but failed to automatically start the
-installation without a key press, others seemed to customize a zillion things
-but ended up getting stuck in some error message or other.
+I wanted to do a headless (remote) installation for a server – i.e. without any
+keyboard access or the chance to peek at a temporarily connected screen. I
+found plenty of information on the net but none of the tutorials really worked
+for me. Some included preseeding the image but failed to automatically start
+the installation without a key press, others seemed to customize a zillion
+things but ended up getting stuck in some error message or other.
 
 So I read my way through all of them and put together a slim working solution –
 at least working for me. So here is my minimal and lazy solution to Debian
@@ -137,15 +137,16 @@ This may be useful if you need to add custom firmware files or anything else
 you would like to use during installation.
 
 
-## Installation
+## Remote Installation
 
 At the moment, UEFI boot is not supported so make sure your system supports
 legacy boot.
 
-Insert the USB stick (or CD) in the target system and power it up. Find out the
+Insert the USB stick (or CD) in the target system and power it up. Wait for a moment
+for the installer to boot and bring up the network. Find out the
 IP address of the machine (e.g. from the router/DHCP server). Alternatively,
 configure static IP in the preseed file. Once the system is up you should be
-able to ping it. Now log in and complete the installation:
+able to ping it. Now log in and complete the installation remotely:
 
     ssh installer@yourmachine
 
@@ -157,6 +158,7 @@ NOTE: The included `minimal-preseed.cfg` assumes that you are connected via
 ethernet (as a server should be). If you want to/must use a wifi connection you
 need to configure this.
 
-And just because it took me a while to realize: The Debian installer uses
-`screen` in the ssh connection to provide multiple virtual consoles. You can
-switch between them with `CTRL-a TAB`. See `man screen` for more information.
+And just because it took me a while to realize: The Debian remote-installer
+uses `screen` to provide multiple virtual consoles. You can switch between them
+with `CTRL-a TAB`. See `man screen` for more information.
+
