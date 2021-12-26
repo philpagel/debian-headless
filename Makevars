@@ -4,8 +4,8 @@
 RELEASE = bullseye
 
 # Name of source and target iso filenames
-SOURCE = debian-11.0.0-amd64-netinst.iso
-TARGET = debian-11.0.0-amd64-netinst-headless.iso
+SOURCE = debian-11.2.0-amd64-netinst.iso
+TARGET = debian-11.2.0-amd64-netinst-headless.iso
 
 # Architecture settings
 # amd64
