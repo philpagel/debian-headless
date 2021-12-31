@@ -28,6 +28,7 @@ help:
 	@echo "'${QEMU}'"
 	@echo "'${SOURCE}'"
 	@echo "'${TARGET}'"
+	@echo "'${LABEL}'"
 	@echo "'${RELEASE_NO}'"
 	@echo "'${MAJOR}'"
 	@echo "'${RELEASE_NAME}'"
@@ -124,6 +125,7 @@ FAT:
 clean:
 	rm -rf ${TMP}
 	rm -f image.qcow
+	rm -f example-preseed.cfg
 
 .PHONY: maintainer-clean
 maintainer-clean: clean
