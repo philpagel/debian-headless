@@ -6,30 +6,42 @@ ISOLINUX_CFG_TEMPLATE = isolinux.cfg.template
 
 help:
 	@echo
-	@echo "Edit Makevars, first."
-	@echo "Then use the Makefile."
+	@echo "Edit 'Makevars' before running any targets."
+
 	@echo
 	@echo "Usage:"
 	@echo
-	@echo "  make install-depends		Install dependencies"
-	@echo "  make example-preseed.cfg	download preseed.cfg from Debian"
-	@echo "  make image             	Build the ISO image"
-	@echo "  make qemu              	Boot ISO image in QEMU for testing (optional)"
-	@echo "  make usb               	Write ISO to USB device"
-	@echo "  make FAT               	Add a FAT partition ot the USB stick (optiona)"
-	@echo "  make clean             	Clean up temporary files and folders"
-	@echo "  make maintainer-clean 		Make clean and remove the output ISO"
+	@echo "  make config                Edit configuration (Makevars)"
+	@echo "  make install-depends       Install dependencies"
+	@echo "  make example-preseed.cfg   download preseed.cfg from Debian"
+	@echo "  make image                 Build the ISO image"
+	@echo "  make qemu                  Boot ISO image in QEMU for testing (optional)"
+	@echo "  make usb                   Write ISO to USB device"
+	@echo "  make FAT                   Add a FAT partition ot the USB stick (optiona)"
+	@echo "  make clean                 Clean up temporary files and folders"
+	@echo "  make maintainer-clean      Make clean and remove the output ISO"
 	@echo
 	@echo "For details consult the README.md file"
 	@echo
-
+	@echo "'${ARCH}'"
+	@echo "'${ARCHFOLDER}'"
+	@echo "'${QEMU}'"
+	@echo "'${SOURCE}'"
+	@echo "'${TARGET}'"
+	@echo "'${RELEASE_NO}'"
+	@echo "'${MAJOR}'"
+	@echo "'${RELEASE_NAME}'"
 
 .PHONY: install-depends
 install-depends:
 	sudo apt-get install libarchive-tools syslinux syslinux-utils cpio genisoimage coreutils qemu-system qemu-system-x86 qemu-utils util-linux
 
 example-preseed.cfg:
-	wget -O $@ https://www.debian.org/releases/$(RELEASE)/example-preseed.txt
+	wget -O $@ https://www.debian.org/releases/$(RELEASE_NAME)/example-preseed.txt
+
+.PHONY: config
+config:
+	edit Makevars
 
 .PHONY: image
 image: ${TARGET}
@@ -37,7 +49,7 @@ image: ${TARGET}
 # Create ISO and fix MBR for USB boot.
 ${TARGET}: ${TMP} \
            ${TMP}/isolinux/isolinux.cfg \
-           ${TMP}/install.${ARCH}/initrd.gz \
+           ${TMP}/install.${ARCHFOLDER}/initrd.gz \
            ${TMP}/md5sum.txt
 	genisoimage -V ${LABEL} \
 		-r -J -b isolinux/isolinux.bin -c isolinux/boot.cat \
@@ -53,18 +65,18 @@ ${TMP}: ${SOURCE}
 
 # Create a minimal isolinux config. no menu, no prompt.
 ${TMP}/isolinux/isolinux.cfg: ${ISOLINUX_CFG_TEMPLATE}
-	sed "s/ARCH/${ARCH}/" ${ISOLINUX_CFG_TEMPLATE} > $@
+	sed "s/ARCHFOLDER/${ARCHFOLDER}/" ${ISOLINUX_CFG_TEMPLATE} > $@
 
 # Write the preseed file to initrd.
-${TMP}/install.${ARCH}/initrd.gz: ${PRESEED}
-	gunzip ${TMP}/install.${ARCH}/initrd.gz
+${TMP}/install.${ARCHFOLDER}/initrd.gz: ${PRESEED}
+	gunzip ${TMP}/install.${ARCHFOLDER}/initrd.gz
 	cp $< ${TMP}/preseed.cfg
-	cd ${TMP}; echo preseed.cfg | cpio -H newc -o -A -F install.${ARCH}/initrd
-	gzip ${TMP}/install.${ARCH}/initrd
+	cd ${TMP}; echo preseed.cfg | cpio -H newc -o -A -F install.${ARCHFOLDER}/initrd
+	gzip ${TMP}/install.${ARCHFOLDER}/initrd
 	rm ${TMP}/preseed.cfg
 
 # Recreate the MD5 sums of all files.
-${TMP}/md5sum.txt: ${TMP} ${TMP}/isolinux/isolinux.cfg ${TMP}/install.${ARCH}/initrd.gz
+${TMP}/md5sum.txt: ${TMP} ${TMP}/isolinux/isolinux.cfg ${TMP}/install.${ARCHFOLDER}/initrd.gz
 	find ${TMP}/ -type f -exec md5sum {} \; > $@
 
 # Run qemu with forwarded ssh port.

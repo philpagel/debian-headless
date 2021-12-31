@@ -1,25 +1,53 @@
 # Configuration
 
-# Used to download example-preseed.cfg for your target Debian release.
-RELEASE = bullseye
-
-# Name of source and target iso filenames
-SOURCE = debian-11.2.0-amd64-netinst.iso
-TARGET = debian-11.2.0-amd64-netinst-headless.iso
+# Debian release
+RELEASE_NO = 13.2.0
 
 # Architecture settings
-# amd64
-ARCH = amd
-QEMU = qemu-system-x86_64
-# i386
-#ARCH = 386
-#QEMU = qemu-system-i386
+ARCH = amd64
+#ARCH = i386
+
+
+############################################################
+# Uncomment the following to override automatic generation
+############################################################
+
+#SOURCE = 
+#TARGET = 
+#LABEL = 
+
+
+############################################################
+# nothing to configure below this line
+############################################################
+
+# set architecture dependent variables
+ifeq "${ARCH}" "amd64" 
+    ARCHFOLDER = amd
+    QEMU = qemu-system-x86_64
+else ifeq "${ARCH}" i386
+    ARCHFOLDER = 386
+    QEMU = qemu-system-i386
+endif
+
+# Used to download example-preseed.cfg for your target Debian release.
+MAJOR = $(firstword $(subst ., ,${RELEASE_NO}))
+ifeq "${MAJOR}" "13"
+    RELEASE_NAME = Trixie
+else ifeq "${MAJOR}" "12"
+    RELEASE_NAME = Bookworm
+else ifeq "${MAJOR}" "11"
+    RELEASE_NAME = bullseye
+else ifeq "${MAJOR}" "10"
+    RELEASE_NAME = buster
+else ifeq "${MAJOR}" "9"
+    RELEASE_NAME = stretch
+endif
+
 
 # Preseeding file to use
 PRESEED = preseed.cfg
 
-# Volume label for the target ISO image
-LABEL = debian-11.0.0-amd64-headless
 
 # Where to find the usb drive
 # Caution: if this is set incorrectly you may ruin your system!
