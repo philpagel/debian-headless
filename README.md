@@ -12,9 +12,6 @@ at least working for me. So here is my minimal and lazy solution to Debian
 headless installation image building.  I mostly documented it for myself but
 maybe it's useful for someone out there.
 
-At this point, this does not support UEFI boot! So make sure that your system
-supports legacy boot.
-
 
 ## In a nutshell
 
@@ -33,7 +30,8 @@ supports legacy boot.
     make image
 
     # OPTIONAL: test iso image in qemu
-    make qemu
+    make qemu-bios
+    make qemu-uefi
 
     # Write image to usb stick
     make usb
@@ -107,14 +105,18 @@ have to download it yourself and set the `SOURCE` variable in the config file
 
 ## Dry run it
 
-This step is optional but may save you a lot of trouble later.
+This step is optional but may save you a lot of trouble later.  As of writing,
+the Debian ovmf package that provides UEFI firmawre for QEMU only supports
+`amd64` but not `i386`. So only the first of the follwing comands will work for 
+`i386` images:
 
-    make qemu
+    make qemu-bios
+    make qemu-uefi
 
 This will fire up a QEMU session booting your new image. You can follow the
 boot process in the emulator and eventually connect to the installer like this:
 
-    ssh installer@localhost -p10022
+    ssh installer@localhost -p22222
 
 So you can test-drive the installation before walking over to the server room.
 
@@ -148,9 +150,6 @@ you would like to use during installation.
 
 
 ## Remote Installation
-
-At the moment, UEFI boot is not supported so make sure your system supports
-legacy boot.
 
 Insert the USB stick (or CD) in the target system and power it up. Wait for a moment
 for the installer to boot and bring up the network. Find out the
