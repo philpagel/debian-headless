@@ -18,13 +18,13 @@ supports legacy boot.
 
 ## In a nutshell
 
-    # Get a netinst image
-    wget https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-11.2.0-amd64-netinst.iso
-
     # Edit the configuration variables
-    vim Makevars
+    make config
 
-    # Create and edit preseed.cfg
+    # Get a netinst image
+    make download
+
+    # Create and adapt preseed.cfg
     cp minimal-preseed.cfg preseed.cfg
 
     vim preseed.cfg
@@ -49,44 +49,54 @@ Make sure all necessary tools are installed:
     make install-depends
 
 
-## Download the Debian installation image
-
-Create a work folder and download the Debian installation image (netinst):
-
-    mkdir foo
-    cd foo
-    
-    wget https://www.debian.org/distrib/netinst/...
-
-
 ## Configure some things
 
-Edit the `Makevars` and set some variables to match your situation. E.g.
+Edit `Makevars` and set the variables to match your situation. You can use 
 
-    SOURCE = debian-11.0.0-amd64-netinst.iso
-    TARGET = debian-11.0.0-amd64-netinst-headless.iso
-    ARCH = amd
-    QEMU = qemu-system-x86_64
-    LABEL = debian-headless
+    make config
+
+to do so. At the very minimum you need to set the following variables - e.g.:
+
+    RELEASE_NO = 11.2.0
+    ARCH = amd64
     USBDEV = /dev/sdc
 
-`ARCH` indicates the target processor architecture – `amd` or `386` (*not* `i386`!)
-This variable is used to construct the correct folder name (`install.amd`) for
-initrd. `LABEL` is the CD volume label and `USBDEV` is the device that
-represents your usb stick. The latter is needed for `make usb` and `make FAT`
-Be **extra careful** to set `USBDEV` correctly! If you set it incorrectly, you
-may overwrite your system disk!  `QEMU` is the name of the qemu-system binary
-that matches the target architecture (optional).
+Please set `RELEASE_NO` for the Debian release you want to install. This is used to 
+download the `example-preseed.cfg` file that matches your release and to construct
+the correct image filenames. 
 
-A `minimal-preseed.cfg` file for Debian buster is included. That file
-configures the bare minimum to get past the installer questions before the ssh
-connection becomes available. To get a full `example-preeed.cfg` file directly
-from Debian, `make example-preseed.cfg`. Use any of these files as a template
-to create a custom configuration file. This is also the place to configure the
-login password for the network installation. For comprehensive information on
-preseeding, study this:
+`ARCH` indicates the target processor architecture – `amd64` or `i386`.  This
+variable is used to construct the correct Debian image name, identify the
+installation folder in the image (`install.amd`) and download the correct
+preseeding example file for your OS version. `LABEL` is the CD volume label and
+
+`USBDEV` is the device that represents your usb stick. The latter is needed for
+`make usb` and `make FAT` Be **extra careful** to set `USBDEV` correctly! If
+you set it incorrectly, you may overwrite your system disk!  `QEMU` is the name
+of the qemu-system binary that matches the target architecture (optional).
+
+A `minimal-preseed.cfg` file is included. That file configures the bare minimum
+to get past the installer questions before the ssh connection becomes
+available. To get a full `example-preeed.cfg` file directly from Debian, `make
+example-preseed.cfg`. Use any of these files as a template to create a custom
+configuration file. This is also the place to configure the login password for
+the network installation. For comprehensive information on preseeding, study
+this:
 
 <https://www.debian.org/releases/stable/amd64/apb.en.html>
+
+You can override the automatic generation of source/target file names and image label
+by setting the respective variables in the config file.
+
+## Download the Debian installation image
+
+Download the Debian installation image (netinst):
+
+    make download
+
+If you want to start off an image other than the latest DEBIAN netinst, you
+have to download it yourself and set the `SOURCE` variable in the config file
+(`make config`).
 
 
 ## Build the ISO

@@ -1,9 +1,5 @@
 include Makevars
 
-TMP = tmp
-ISOLINUX_CFG_TEMPLATE = isolinux.cfg.template
-
-
 help:
 	@echo
 	@echo "Edit 'Makevars' before running any targets."
@@ -13,6 +9,7 @@ help:
 	@echo
 	@echo "  make config                Edit configuration (Makevars)"
 	@echo "  make install-depends       Install dependencies"
+	@echo "  make download              download latest Debian netinst image"
 	@echo "  make example-preseed.cfg   download preseed.cfg from Debian"
 	@echo "  make image                 Build the ISO image"
 	@echo "  make qemu                  Boot ISO image in QEMU for testing (optional)"
@@ -23,22 +20,25 @@ help:
 	@echo
 	@echo "For details consult the README.md file"
 	@echo
-	@echo "'${ARCH}'"
-	@echo "'${ARCHFOLDER}'"
-	@echo "'${QEMU}'"
-	@echo "'${SOURCE}'"
-	@echo "'${TARGET}'"
-	@echo "'${LABEL}'"
-	@echo "'${RELEASE_NO}'"
-	@echo "'${MAJOR}'"
-	@echo "'${RELEASE_NAME}'"
+
 
 .PHONY: install-depends
 install-depends:
 	sudo apt-get install libarchive-tools syslinux syslinux-utils cpio genisoimage coreutils qemu-system qemu-system-x86 qemu-utils util-linux
 
 example-preseed.cfg:
-	wget -O $@ https://www.debian.org/releases/$(RELEASE_NAME)/example-preseed.txt
+	wget -N -O $@ https://www.debian.org/releases/$(RELEASE_NAME)/example-preseed.txt
+
+
+.PHONY: download
+.ONESHELL:
+download:
+	set -e
+	TMPFILE=`mktemp -p ./`
+	wget -O $$TMPFILE https://www.debian.org/download
+	IMGURL=`grep -o -e "https://cdimage.debian.org/.*netinst.iso" $$TMPFILE | head -n1`
+	wget -N $$IMGURL
+	rm -f $$TMPFILE
 
 .PHONY: config
 config:
@@ -66,15 +66,13 @@ ${TMP}: ${SOURCE}
 
 # Create a minimal isolinux config. no menu, no prompt.
 ${TMP}/isolinux/isolinux.cfg: ${ISOLINUX_CFG_TEMPLATE}
-	sed "s/ARCHFOLDER/${ARCHFOLDER}/" ${ISOLINUX_CFG_TEMPLATE} > $@
+	sed "s/ARCH/${ARCHFOLDER}/" ${ISOLINUX_CFG_TEMPLATE} > $@
 
 # Write the preseed file to initrd.
 ${TMP}/install.${ARCHFOLDER}/initrd.gz: ${PRESEED}
 	gunzip ${TMP}/install.${ARCHFOLDER}/initrd.gz
-	cp $< ${TMP}/preseed.cfg
-	cd ${TMP}; echo preseed.cfg | cpio -H newc -o -A -F install.${ARCHFOLDER}/initrd
+	echo ${PRESEED} | cpio -H newc -o -A -F ${TMP}/install.${ARCHFOLDER}/initrd
 	gzip ${TMP}/install.${ARCHFOLDER}/initrd
-	rm ${TMP}/preseed.cfg
 
 # Recreate the MD5 sums of all files.
 ${TMP}/md5sum.txt: ${TMP} ${TMP}/isolinux/isolinux.cfg ${TMP}/install.${ARCHFOLDER}/initrd.gz
@@ -84,8 +82,9 @@ ${TMP}/md5sum.txt: ${TMP} ${TMP}/isolinux/isolinux.cfg ${TMP}/install.${ARCHFOLD
 .PHONY: qemu
 qemu: ${TARGET} image.qcow
 	@echo
-	@echo "\nOnce the installer is in network console you can log in:"
+	@echo "Once the installer is has launched networking you can log in:\n"
 	@echo "    ssh installer@localhost -p10022\n"
+	@echo "It may take a few minutes for the installer to get to that point.\n"
 	${QEMU} -m 1024 \
 		-net user,hostfwd=tcp::10022-:22 \
 		-net nic \

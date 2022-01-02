@@ -7,31 +7,37 @@ RELEASE_NO = 11.2.0
 ARCH = amd64
 #ARCH = i386
 
-# Preseeding file to use
-PRESEED = preseed.cfg
-
 # Where to find the usb drive
-# Caution: if this is set incorrectly you may ruin your system!
-# uncomment and set carefully!
-# use lsusb and/or the output of dmesg after plugging in your usb drive
-# to find the correct device file
+# CAUTION: if set incorrectly you may ruin your system!
+USBDEV = /dev/null  # Safe default
 #USBDEV = /dev/sda
-USBDEV = /dev/null
-
 
 ############################################################
 # Uncomment and edit the following to override automatic 
-# generation
+# names
+# LABEL ≤ 32 chars
 ############################################################
 
 #SOURCE = 
 #TARGET = 
 #LABEL = 
 
+############################################################
+# you may safely leave these untouched
+############################################################
+
+# Folder for image unpacking
+TMP = tmp
+
+# Preseeding file to use
+PRESEED = preseed.cfg
+
 
 ############################################################
 # nothing to configure below this line
 ############################################################
+
+ISOLINUX_CFG_TEMPLATE = isolinux.cfg.template
 
 # set architecture dependent variables
 ifeq "${ARCH}" "amd64" 
@@ -61,10 +67,10 @@ ifndef SOURCE
     SOURCE = debian-${RELEASE_NO}-${ARCH}-netinst.iso
 endif
 ifndef TARGET
-    TARGET = $(subst .iso,-headless.iso,${SOURCE})
+    TARGET = $(subst .iso,-hl.iso,${SOURCE})
 endif
 ifndef LABEL
-    LABEL = $(subst .iso,-headless,${SOURCE})
+    LABEL = $(subst .iso,-hl,${SOURCE})
 endif
 
 # vim: set syntax=make :
