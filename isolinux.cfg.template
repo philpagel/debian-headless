@@ -1,5 +1,5 @@
 DEFAULT install
   SAY Now booting the debian installer
 LABEL install
-	kernel /install.ARCH/vmlinuz
-	append vga=788 initrd=/install.ARCH/initrd.gz --- quiet
+	kernel /install.<ARCH>/vmlinuz
+	append vga=788 initrd=/install.<ARCH>/initrd.gz --- quiet

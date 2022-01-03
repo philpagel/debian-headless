@@ -12,7 +12,8 @@ help:
 	@echo "  make download              download latest Debian netinst image"
 	@echo "  make example-preseed.cfg   download preseed.cfg from Debian"
 	@echo "  make image                 Build the ISO image"
-	@echo "  make qemu                  Boot ISO image in QEMU for testing (optional)"
+	@echo "  make qemu-bios             Boot ISO image in QEMU (BIOS mode)"
+	@echo "  make qemu-uefi             Boot ISO image in QEMU (UEFI boot)"
 	@echo "  make usb                   Write ISO to USB device"
 	@echo "  make FAT                   Add a FAT partition ot the USB stick (optiona)"
 	@echo "  make clean                 Clean up temporary files and folders"
@@ -24,7 +25,9 @@ help:
 
 .PHONY: install-depends
 install-depends:
-	sudo apt-get install libarchive-tools syslinux syslinux-utils cpio genisoimage coreutils qemu-system qemu-system-x86 qemu-utils util-linux
+	sudo apt-get install \
+		libarchive-tools syslinux syslinux-utils cpio genisoimage \
+		coreutils qemu-system qemu-system-x86 qemu-utils util-linux
 
 example-preseed.cfg:
 	wget -N -O $@ https://www.debian.org/releases/$(RELEASE_NAME)/example-preseed.txt
@@ -50,13 +53,18 @@ image: ${TARGET}
 # Create ISO and fix MBR for USB boot.
 ${TARGET}: ${TMP} \
            ${TMP}/isolinux/isolinux.cfg \
+		   ${TMP}/boot/grub/grub.cfg \
            ${TMP}/install.${ARCHFOLDER}/initrd.gz \
            ${TMP}/md5sum.txt
+
 	genisoimage -V ${LABEL} \
 		-r -J -b isolinux/isolinux.bin -c isolinux/boot.cat \
 		-no-emul-boot -boot-load-size 4 -boot-info-table \
+		-eltorito-alt-boot \
+		-e ${tmp} boot/grub/efi.img \
+		-no-emul-boot \
 		-o $@ ${TMP}
-	isohybrid $@
+	isohybrid --uefi $@
 
 # Unpack the image to the folder and set write permissions.
 ${TMP}: ${SOURCE}
@@ -66,7 +74,10 @@ ${TMP}: ${SOURCE}
 
 # Create a minimal isolinux config. no menu, no prompt.
 ${TMP}/isolinux/isolinux.cfg: ${ISOLINUX_CFG_TEMPLATE}
-	sed "s/ARCH/${ARCHFOLDER}/" ${ISOLINUX_CFG_TEMPLATE} > $@
+	sed "s/<ARCH>/${ARCHFOLDER}/" ${ISOLINUX_CFG_TEMPLATE} > $@
+
+${TMP}/boot/grub/grub.cfg: ${GRUB_CFG_TEMPLATE}
+	sed "s/<ARCH>/${ARCHFOLDER}/" ${GRUB_CFG_TEMPLATE} > $@
 
 # Write the preseed file to initrd.
 ${TMP}/install.${ARCHFOLDER}/initrd.gz: ${PRESEED}
@@ -78,15 +89,29 @@ ${TMP}/install.${ARCHFOLDER}/initrd.gz: ${PRESEED}
 ${TMP}/md5sum.txt: ${TMP} ${TMP}/isolinux/isolinux.cfg ${TMP}/install.${ARCHFOLDER}/initrd.gz
 	find ${TMP}/ -type f -exec md5sum {} \; > $@
 
-# Run qemu with forwarded ssh port.
-.PHONY: qemu
-qemu: ${TARGET} image.qcow
+# boot image in qemu (BIOS mode)
+.PHONY: qemu-bios
+qemu-bios: ${TARGET} image.qcow
 	@echo
-	@echo "Once the installer is has launched networking you can log in:\n"
-	@echo "    ssh installer@localhost -p10022\n"
+	@echo "Once the installer has launched networking you can log in:\n"
+	@echo "    ssh installer@localhost -p22222\n"
 	@echo "It may take a few minutes for the installer to get to that point.\n"
 	${QEMU} -m 1024 \
-		-net user,hostfwd=tcp::10022-:22 \
+		-net user,hostfwd=tcp::22222-:22 \
+		-net nic \
+		-hda image.qcow \
+		-cdrom $<
+
+# boot image in qemu (UEFI mode)
+.PHONY: qemu-uefi
+qemu-uefi: ${TARGET} image.qcow
+	@echo
+	@echo "Once the installer is has launched networking you can log in:\n"
+	@echo "    ssh installer@localhost -p22222\n"
+	@echo "It may take a few minutes for the installer to get to that point.\n"
+	${QEMU} -m 1024 \
+		-net user,hostfwd=tcp::22222-:22 \
+		-bios /usr/share/ovmf/OVMF.fd \
 		-net nic \
 		-hda image.qcow \
 		-cdrom $<
@@ -101,6 +126,7 @@ usb:
 	@echo "This will overwrite all data on ${USBDEV}!"
 	@read -p "Type 'yes' if you really want to do this: " proceed; \
 	if [ $$proceed = "yes" ] ; then \
+		echo "writing image to ${USBDEV}"; \
 		sudo dd if=${TARGET} of=${USBDEV} bs=4k ; \
 		sync ; \
 	else \
@@ -113,7 +139,7 @@ FAT:
 	@echo "This will overwrite ${USBDEV}!"
 	@read -p "Type 'yes' if you really want to do this: " proceed; \
 	if [ $$proceed = "yes" ] ; then \
-		echo " , , 0xb" | sudo sfdisk ${USBDEV} -N 2 ;\
+	echo " , , 0xb" | sudo sfdisk ${USBDEV} -N 3 ;\
 		sudo mkfs.vfat ${USBDEV}2 ;\
 		sync ;\
 	else \

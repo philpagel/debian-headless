@@ -9,7 +9,7 @@ ARCH = amd64
 
 # Where to find the usb drive
 # CAUTION: if set incorrectly you may ruin your system!
-USBDEV = /dev/null  # Safe default
+USBDEV = /dev/null
 #USBDEV = /dev/sda
 
 ############################################################
@@ -38,12 +38,13 @@ PRESEED = preseed.cfg
 ############################################################
 
 ISOLINUX_CFG_TEMPLATE = isolinux.cfg.template
+GRUB_CFG_TEMPLATE = grub.cfg.template
 
 # set architecture dependent variables
 ifeq "${ARCH}" "amd64" 
     ARCHFOLDER = amd
     QEMU = qemu-system-x86_64
-else ifeq "${ARCH}" i386
+else ifeq "${ARCH}" "i386"
     ARCHFOLDER = 386
     QEMU = qemu-system-i386
 endif
