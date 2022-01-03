@@ -140,7 +140,7 @@ FAT:
 	@read -p "Type 'yes' if you really want to do this: " proceed; \
 	if [ $$proceed = "yes" ] ; then \
 	echo " , , 0xb" | sudo sfdisk ${USBDEV} -N 3 ;\
-		sudo mkfs.vfat ${USBDEV}2 ;\
+		sudo mkfs.vfat ${USBDEV}3 ;\
 		sync ;\
 	else \
 		echo "Aborting" ; \
