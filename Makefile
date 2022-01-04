@@ -2,9 +2,6 @@ include Makevars
 
 help:
 	@echo
-	@echo "Edit 'Makevars' before running any targets."
-
-	@echo
 	@echo "Usage:"
 	@echo
 	@echo "  make config                Edit configuration (Makevars)"
@@ -15,11 +12,11 @@ help:
 	@echo "  make qemu-bios             Boot ISO image in QEMU (BIOS mode)"
 	@echo "  make qemu-uefi             Boot ISO image in QEMU (UEFI boot)"
 	@echo "  make usb                   Write ISO to USB device"
-	@echo "  make FAT                   Add a FAT partition ot the USB stick (optiona)"
+	@echo "  make FAT                   Add a FAT partition ot the USB stick"
 	@echo "  make clean                 Clean up temporary files and folders"
 	@echo "  make maintainer-clean      Make clean and remove the output ISO"
 	@echo
-	@echo "For details consult the README.md file"
+	@echo "See README.md for details"
 	@echo
 
 

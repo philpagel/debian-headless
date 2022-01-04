@@ -18,7 +18,7 @@ USBDEV = /dev/null
 # LABEL ≤ 32 chars
 ############################################################
 
-#SOURCE = 
+#SOURCE =
 #TARGET = 
 #LABEL = 
 

@@ -1,16 +1,20 @@
 # Debian headless/remote installation
 
-I wanted to do a headless (remote) installation for a server – i.e. without any
-keyboard access or the chance to peek at a temporarily connected screen. I
-found plenty of information on the net but none of the tutorials really worked
-for me. Some included preseeding the image but failed to automatically start
-the installation without a key press, others seemed to customize a zillion
-things but ended up getting stuck in some error message or other.
+I wanted to install Debian on a server remotely – i.e. without any keyboard
+access or the chance to peek at a temporarily connected screen. I found plenty
+of information on the net but none of the tutorials really worked for me. Some
+included preseeding the image but failed to automatically start the
+installation without a key press, others seemed to customize a zillion things
+but ended up getting stuck in some error message or other.  The problem with
+ssh remote installation with stock images is that they still require some
+initial human interaction to select the desired menu option and some basic
+setup before the network is configured. That makes the whole point of remote
+installation moot...
 
-So I read my way through all of them and put together a slim working solution –
-at least working for me. So here is my minimal and lazy solution to Debian
-headless installation image building.  I mostly documented it for myself but
-maybe it's useful for someone out there.
+So I read my way through lots of tutorials and put together a slim working
+solution – at least working for me. So here is my minimal and lazy solution to
+Debian headless installation image building.  I mostly documented it for myself
+but maybe it's useful for someone out there.
 
 
 ## In a nutshell
@@ -53,7 +57,7 @@ Edit `Makevars` and set the variables to match your situation. You can use
 
     make config
 
-to do so. At the very minimum you need to set the following variables - e.g.:
+to do so. At the very minimum you need to set the following variables – e.g.:
 
     RELEASE_NO = 11.2.0
     ARCH = amd64
@@ -67,11 +71,13 @@ the correct image filenames.
 variable is used to construct the correct Debian image name, identify the
 installation folder in the image (`install.amd`) and download the correct
 preseeding example file for your OS version. `LABEL` is the CD volume label and
-
 `USBDEV` is the device that represents your usb stick. The latter is needed for
 `make usb` and `make FAT` Be **extra careful** to set `USBDEV` correctly! If
 you set it incorrectly, you may overwrite your system disk!  `QEMU` is the name
 of the qemu-system binary that matches the target architecture (optional).
+
+I didn't have much luck with booting i386 images via UEFI – neither the stock
+images not the remastered ones. But maybe it's just my particular machine/BIOS...
 
 A `minimal-preseed.cfg` file is included. That file configures the bare minimum
 to get past the installer questions before the ssh connection becomes
@@ -83,12 +89,13 @@ this:
 
 <https://www.debian.org/releases/stable/amd64/apb.en.html>
 
-You can override the automatic generation of source/target file names and image label
-by setting the respective variables in the config file.
+You can override the automatic generation of source/target file names and image
+label by setting the respective variables in the config file. 
+
 
 ## Download the Debian installation image
 
-Download the Debian installation image (netinst):
+Download the latest Debian netinst installation image (currently only amd64):
 
     make download
 
@@ -105,20 +112,21 @@ have to download it yourself and set the `SOURCE` variable in the config file
 
 ## Dry run it
 
-This step is optional but may save you a lot of trouble later.  As of writing,
-the Debian ovmf package that provides UEFI firmawre for QEMU only supports
-`amd64` but not `i386`. So only the first of the follwing comands will work for 
-`i386` images:
+This step is optional but may save you a lot of trouble later.
 
     make qemu-bios
     make qemu-uefi
 
-This will fire up a QEMU session booting your new image. You can follow the
+This will fire up a QEMU session booting your new image.
+
+
+You can follow the
 boot process in the emulator and eventually connect to the installer like this:
 
     ssh installer@localhost -p22222
 
 So you can test-drive the installation before walking over to the server room.
+The default password is `r00tme` – please change it in the preseeding file.
 
 
 ## Write to usb stick or burn cd
@@ -149,7 +157,7 @@ This may be useful if you need to add custom firmware files or anything else
 you would like to use during installation.
 
 
-## Remote Installation
+## Remote Installation via ssh
 
 Insert the USB stick (or CD) in the target system and power it up. Wait for a moment
 for the installer to boot and bring up the network. Find out the
@@ -167,7 +175,14 @@ NOTE: The included `minimal-preseed.cfg` assumes that you are connected via
 ethernet (as a server should be). If you want to/must use a wifi connection you
 need to configure this.
 
-And just because it took me a while to realize: The Debian remote-installer
-uses `screen` to provide multiple virtual consoles. You can switch between them
-with `CTRL-a TAB`. See `man screen` for more information.
+## Random notes
+
+Just because it took me a while to realize: The Debian remote-installer uses
+`screen` to provide multiple virtual consoles. You can switch between them with
+`CTRL-a TAB`. See `man screen` for more information.
+
+It shouldn't be too hard to adapt this to other Debian based distributions such
+as Ubuntu. However, I don't feel like doing that – mostly because it will make
+the script more complex but also because, in my view, Ubuntu is mostly a desktop
+distribution and desktops have keyboards and screens, by definition.
 
