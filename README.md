@@ -165,7 +165,7 @@ boot process in the emulator and eventually connect to the installer like this:
 
 Or via serial console:
 
-    telent localhost 33333
+    telnet localhost 33333
 
 So you can test-drive the installation before trying it on a real server.  The
 default password is `r00tme` – please change it in the preseeding file.
