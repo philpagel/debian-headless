@@ -2,6 +2,6 @@ default=Install
 timeout=0
 menuentry 'Install' {
     set background_color=black
-    linux    /install.<ARCH>/vmlinuz vga=788 --- quiet 
+    linux    /install.<ARCH>/vmlinuz vga=788 <CONSOLE> --- <CONSOLE>
     initrd   /install.<ARCH>/initrd.gz
 }

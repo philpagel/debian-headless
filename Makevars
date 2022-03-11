@@ -12,6 +12,25 @@ ARCH = amd64
 USBDEV = /dev/null
 #USBDEV = /dev/sda
 
+# Console configuration
+#
+# Format: DEV[,PARMS]
+# 
+# DEV: typically ttyS0 or ttyUSB0
+#
+# SERIALPARMS format (according to LINUX kenrel documentation):
+# depend on the driver. For the serial port this
+# defines the baudrate/parity/bits/flow control of
+# the port, in the format BBBBPNF, where BBBB is the
+# speed, P is parity (n/o/e), N is number of bits,
+# and F is flow control ('r' for RTS). Default is
+# 9600n8. The maximum baudrate is 115200.
+# For serial console:
+CONSOLE = ttyS0,115200n8
+# For local console:
+# CONSOLE = tty0
+
+
 ############################################################
 # Uncomment and edit the following to override automatic 
 # names

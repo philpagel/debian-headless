@@ -52,7 +52,8 @@ ${TARGET}: ${TMP} \
            ${TMP}/isolinux/isolinux.cfg \
 		   ${TMP}/boot/grub/grub.cfg \
            ${TMP}/install.${ARCHFOLDER}/initrd.gz \
-           ${TMP}/md5sum.txt
+           ${TMP}/md5sum.txt \
+		   Makevars
 
 	genisoimage -V ${LABEL} \
 		-r -J -b isolinux/isolinux.bin -c isolinux/boot.cat \
@@ -70,11 +71,16 @@ ${TMP}: ${SOURCE}
 	chmod -R +w $@
 
 # Create a minimal isolinux config. no menu, no prompt.
+.ONESHELL:
 ${TMP}/isolinux/isolinux.cfg: ${ISOLINUX_CFG_TEMPLATE}
-	sed "s/<ARCH>/${ARCHFOLDER}/" ${ISOLINUX_CFG_TEMPLATE} > $@
+	sed -e "s/<ARCH>/${ARCHFOLDER}/g" \
+		-e "s/<CONSOLE>/console=${CONSOLE}/g" \
+		$< > $@
 
 ${TMP}/boot/grub/grub.cfg: ${GRUB_CFG_TEMPLATE}
-	sed "s/<ARCH>/${ARCHFOLDER}/" ${GRUB_CFG_TEMPLATE} > $@
+	sed -e "s/<ARCH>/${ARCHFOLDER}/g" \
+		-e "s/<CONSOLE>/console=${CONSOLE}/g" \
+		$< > $@
 
 # Write the preseed file to initrd.
 ${TMP}/install.${ARCHFOLDER}/initrd.gz: ${PRESEED}
@@ -93,24 +99,30 @@ qemu-bios: ${TARGET} image.qcow
 	@echo "Once the installer has launched networking you can log in:\n"
 	@echo "    ssh installer@localhost -p22222\n"
 	@echo "It may take a few minutes for the installer to get to that point.\n"
+	@echo "Alternatively connect to the serial console:\n"
+	@echo "    telnet localhost 33333\n"
 	${QEMU} -m 1024 \
 		-net user,hostfwd=tcp::22222-:22 \
 		-net nic \
 		-hda image.qcow \
+		-serial telnet:localhost:33333,server,nowait \
 		-cdrom $<
 
 # boot image in qemu (UEFI mode)
 .PHONY: qemu-uefi
 qemu-uefi: ${TARGET} image.qcow
 	@echo
-	@echo "Once the installer is has launched networking you can log in:\n"
+	@echo "Once the installer has launched networking you can log in:\n"
 	@echo "    ssh installer@localhost -p22222\n"
 	@echo "It may take a few minutes for the installer to get to that point.\n"
+	@echo "Alternatively connect to the serial console:\n"
+	@echo "    telnet localhost 33333\n"
 	${QEMU} -m 1024 \
 		-net user,hostfwd=tcp::22222-:22 \
 		-bios /usr/share/ovmf/OVMF.fd \
 		-net nic \
 		-hda image.qcow \
+		-serial telnet:localhost:33333,server,nowait \
 		-cdrom $<
 
 # Create a virtual disk for QEMU.

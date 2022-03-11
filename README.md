@@ -16,6 +16,11 @@ solution – at least working for me. So here is my minimal and lazy solution to
 Debian headless installation image building.  I mostly documented it for myself
 but maybe it's useful for someone out there.
 
+My main intent was to connect to the ssh-server of the Debian installer.
+Another possible route for headless installation is via serial console. That
+can either be a physical RS-232 cable or a virtual serial port provided by a
+remote management module/software such as HPEs iLO or something similar.
+
 
 ## In a nutshell
 
@@ -43,6 +48,17 @@ but maybe it's useful for someone out there.
     # optional: Add a FAT32 partition on the remaining free space
     make FAT
 
+    # Boot from the stick
+    # Find IP address of the server 
+    # Connect to the installer via ssh or serial console 
+    # It may take a few minutes until sshd is up...
+
+## Known problems
+
+I didn't have much luck with booting i386 images via UEFI – neither the stock
+Debian images nor the remastered ones. But maybe it's just my particular
+machine/BIOS...
+
 
 ## Dependencies
 
@@ -51,13 +67,17 @@ Make sure all necessary tools are installed:
     make install-depends
 
 
-## Configure some things
+## Configuration
 
 Edit `Makevars` and set the variables to match your situation. You can use 
 
     make config
 
-to do so. At the very minimum you need to set the following variables – e.g.:
+to do so. 
+
+### Image
+
+At the very minimum you need to set the following variables – e.g.:
 
     RELEASE_NO = 11.2.0
     ARCH = amd64
@@ -76,8 +96,24 @@ preseeding example file for your OS version. `LABEL` is the CD volume label and
 you set it incorrectly, you may overwrite your system disk!  `QEMU` is the name
 of the qemu-system binary that matches the target architecture (optional).
 
-I didn't have much luck with booting i386 images via UEFI – neither the stock
-images not the remastered ones. But maybe it's just my particular machine/BIOS...
+### Console parameters
+
+While the main goal of this project was to allow installation via `ssh`, a serial 
+console is an alternative in some cases.
+
+The following default config for the serial console device should work most of
+the time:
+
+    CONSOLE = ttyS0,115200n8
+
+When the serial console is active,  *all output* is redirected to the serial
+interface and you will not see boot messages or the installer on a connected
+screen after that point. Accordingly, normal local installation will not work.
+If you want your image to allow local installations, instead, you may set
+
+    CONSOLE = tty0
+
+## Preseeding
 
 A `minimal-preseed.cfg` file is included. That file configures the bare minimum
 to get past the installer questions before the ssh connection becomes
@@ -92,10 +128,12 @@ this:
 You can override the automatic generation of source/target file names and image
 label by setting the respective variables in the config file. 
 
+For installation via serial console, preseeding is not really necessary.
+
 
 ## Download the Debian installation image
 
-Download the latest Debian netinst installation image (currently only amd64):
+Download the latest Debian `netinst` installation image (currently only amd64):
 
     make download
 
@@ -125,8 +163,17 @@ boot process in the emulator and eventually connect to the installer like this:
 
     ssh installer@localhost -p22222
 
-So you can test-drive the installation before walking over to the server room.
-The default password is `r00tme` – please change it in the preseeding file.
+Or via serial console:
+
+    telent localhost 33333
+
+So you can test-drive the installation before trying it on a real server.  The
+default password is `r00tme` – please change it in the preseeding file.
+
+And here a little screenshot of what that looks like in qemu. The two bottom
+panels show the local screen (left) and the serial console (right):
+
+![](screenshot.png)
 
 
 ## Write to usb stick or burn cd
@@ -159,9 +206,9 @@ you would like to use during installation.
 
 ## Remote Installation via ssh
 
-Insert the USB stick (or CD) in the target system and power it up. Wait for a moment
-for the installer to boot and bring up the network. Find out the
-IP address of the machine (e.g. from the router/DHCP server). Alternatively,
+Insert the USB stick (or CD) in the target system and power it up. Wait a few
+minutes for the installer to boot and bring up the network. Find out the IP
+address of the machine (e.g. from the router/DHCP server). Alternatively,
 configure static IP in the preseed file. Once the system is up you should be
 able to ping it. Now log in and complete the installation remotely:
 
@@ -175,14 +222,33 @@ NOTE: The included `minimal-preseed.cfg` assumes that you are connected via
 ethernet (as a server should be). If you want to/must use a wifi connection you
 need to configure this.
 
+
+## Remote installation via serial console
+
+If the serial interface was configured correctly, you should be able to connect
+through a terminal program (`cu`, `minicom`, etc.) via serial interface.  E.g.
+
+    cu -l /dev/ttyUSB0 -s 115200 
+
+or
+
+    screen /dev/ttyUSB0 115200
+
+Where `/dev/ttyUSB0` is the serial interface on your local computer which is
+connected tot the server.
+
+In the case of a virtual serial interface in iLO (or similar), please refer to
+the manufacturers instructions on how to connect to it.
+
+
 ## Random notes
 
 Just because it took me a while to realize: The Debian remote-installer uses
 `screen` to provide multiple virtual consoles. You can switch between them with
 `CTRL-a TAB`. See `man screen` for more information.
 
-It shouldn't be too hard to adapt this to other Debian based distributions such
-as Ubuntu. However, I don't feel like doing that – mostly because it will make
-the script more complex but also because, in my view, Ubuntu is mostly a desktop
+It shouldn't be too hard to adapt this to other Debian distributions such as
+Ubuntu. However, I don't feel like doing that – mostly because it will make
+things more complex but also because, in my view, Ubuntu is mostly a desktop
 distribution and desktops have keyboards and screens, by definition.
 
