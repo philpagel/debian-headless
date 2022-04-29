@@ -86,7 +86,7 @@ download the `example-preseed.cfg` file that matches your release and to constru
 the correct image filenames. 
 
 `ARCH` indicates the target processor architecture – `amd64` or `i386` (other
-architectrues liek AMD are not supported).  This variable is used to construct
+architectures like AMD are not supported).  This variable is used to construct
 the correct Debian image name, identify the installation folder in the image
 (`install.amd`) and download the correct preseeding example file for your
 OS version. `LABEL` is the CD volume label and `USBDEV` is the device that
@@ -105,7 +105,7 @@ the time:
 
     CONSOLE = ttyS0,115200n8
 
-When the serial console is active,  *all output* is redirected to the serial
+When the serial console is active, *all output* is redirected to the serial
 interface and you will not see boot messages or the installer on a connected
 screen after that point. Accordingly, normal local installation will not work.
 If you want your image to allow local installations, instead, you may set
@@ -142,10 +142,25 @@ yourself and set the `SOURCE` variable in the config file (`make config`)
 accordingly.
 
 
-## Build the ISO
+## Building the ISO
 
     make clean
     make image
+
+
+## Manual modifications to the image
+
+For experts, only! If you know what you are doing, you can now enter the `tmp`
+folder and add packages, edit files etc. You can find some information on what
+you can do [here](https://wiki.debian.org/DebianInstaller/Modify/CD). But you
+don't need to manually follow the steps for re-creating md5 sums and assembling
+the image.
+
+To pack your changes into the image just run
+
+    make image
+
+again.
 
 
 ## Dry run it
