@@ -1,5 +1,34 @@
 # Debian headless/remote installation
 
+Installing Debian is easy enough – but what if you have no physical access to the 
+target machine? Stock images require at least a few keyboard interactions before
+you can continue the installation, remotely.
+
+This little tool will remaster a stock Debian image for 100% remote installation
+via ssh or serial console.
+
+## In a nutshell
+
+    # Edit the configuration variables
+    make config
+
+    # Get a netinst image
+    make download
+
+    # Create and adapt preseed.cfg
+    cp minimal-preseed.cfg preseed.cfg
+
+    vim preseed.cfg
+
+    # Build image
+    make image
+
+    # Write image to usb stick
+    make usb
+
+
+## Motivation
+
 I wanted to install Debian on a server remotely – i.e. without any keyboard
 access or the chance to peek at a temporarily connected screen. I found plenty
 of information on the net but none of the tutorials really worked for me. Some
@@ -21,37 +50,6 @@ Another possible route for headless installation is via serial console. That
 can either be a physical RS-232 cable or a virtual serial port provided by a
 remote management module/software such as HPEs iLO or something similar.
 
-
-## In a nutshell
-
-    # Edit the configuration variables
-    make config
-
-    # Get a netinst image
-    make download
-
-    # Create and adapt preseed.cfg
-    cp minimal-preseed.cfg preseed.cfg
-
-    vim preseed.cfg
-
-    # Build image
-    make image
-
-    # OPTIONAL: test iso image in qemu
-    make qemu-bios
-    make qemu-uefi
-
-    # Write image to usb stick
-    make usb
-
-    # optional: Add a FAT32 partition on the remaining free space
-    make FAT
-
-    # Boot from the stick
-    # Find IP address of the server 
-    # Connect to the installer via ssh or serial console 
-    # It may take a few minutes until sshd is up...
 
 ## Known problems
 
@@ -87,14 +85,15 @@ Please set `RELEASE_NO` for the Debian release you want to install. This is used
 download the `example-preseed.cfg` file that matches your release and to construct
 the correct image filenames. 
 
-`ARCH` indicates the target processor architecture – `amd64` or `i386`.  This
-variable is used to construct the correct Debian image name, identify the
-installation folder in the image (`install.amd`) and download the correct
-preseeding example file for your OS version. `LABEL` is the CD volume label and
-`USBDEV` is the device that represents your usb stick. The latter is needed for
-`make usb` and `make FAT` Be **extra careful** to set `USBDEV` correctly! If
-you set it incorrectly, you may overwrite your system disk!  `QEMU` is the name
-of the qemu-system binary that matches the target architecture (optional).
+`ARCH` indicates the target processor architecture – `amd64` or `i386` (other
+architectrues liek AMD are not supported).  This variable is used to construct
+the correct Debian image name, identify the installation folder in the image
+(`install.amd`) and download the correct preseeding example file for your
+OS version. `LABEL` is the CD volume label and `USBDEV` is the device that
+represents your usb stick. The latter is needed for `make usb` and `make FAT`
+Be **extra careful** to set `USBDEV` correctly! If you set it incorrectly, you
+may overwrite your system disk!  `QEMU` is the name of the qemu-system binary
+that matches the target architecture (optional).
 
 ### Console parameters
 
@@ -128,18 +127,19 @@ this:
 You can override the automatic generation of source/target file names and image
 label by setting the respective variables in the config file. 
 
-For installation via serial console, preseeding is not really necessary.
+For installation via serial console, preseeding is not really necessary but
+this Makefile expects a preseeding file so you need to supply something.
 
 
 ## Download the Debian installation image
 
-Download the latest Debian `netinst` installation image (currently only amd64):
+Download a Debian `netinst` installation image:
 
     make download
 
-If you want to start off an image other than the latest DEBIAN netinst, you
-have to download it yourself and set the `SOURCE` variable in the config file
-(`make config`).
+If you want to start off an image other than Debian netinst, you can provide it
+yourself and set the `SOURCE` variable in the config file (`make config`)
+accordingly.
 
 
 ## Build the ISO
@@ -235,7 +235,7 @@ or
     screen /dev/ttyUSB0 115200
 
 Where `/dev/ttyUSB0` is the serial interface on your local computer which is
-connected tot the server.
+connected to the server.
 
 In the case of a virtual serial interface in iLO (or similar), please refer to
 the manufacturers instructions on how to connect to it.
@@ -247,7 +247,7 @@ Just because it took me a while to realize: The Debian remote-installer uses
 `screen` to provide multiple virtual consoles. You can switch between them with
 `CTRL-a TAB`. See `man screen` for more information.
 
-It shouldn't be too hard to adapt this to other Debian distributions such as
+It shouldn't be too hard to adapt this to other distributions such as
 Ubuntu. However, I don't feel like doing that – mostly because it will make
 things more complex but also because, in my view, Ubuntu is mostly a desktop
 distribution and desktops have keyboards and screens, by definition.
