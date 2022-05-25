@@ -36,7 +36,7 @@ download:
 	set -e
 	TMPFILE=`mktemp -p ./`
 	wget -O $$TMPFILE https://www.debian.org/download
-	IMGURL=`grep -o -e "https://cdimage.debian.org/.*netinst.iso" $$TMPFILE | head -n1`
+	IMGURL=`grep -o -P -e "https://cdimage.debian.org/.*?netinst.iso" $$TMPFILE | head -n1`
 	wget -N $$IMGURL
 	rm -f $$TMPFILE
 
