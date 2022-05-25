@@ -89,11 +89,14 @@ the correct image filenames.
 architectures like AMD are not supported).  This variable is used to construct
 the correct Debian image name, identify the installation folder in the image
 (`install.amd`) and download the correct preseeding example file for your
-OS version. `LABEL` is the CD volume label and `USBDEV` is the device that
-represents your usb stick. The latter is needed for `make usb` and `make FAT`
-Be **extra careful** to set `USBDEV` correctly! If you set it incorrectly, you
-may overwrite your system disk!  `QEMU` is the name of the qemu-system binary
-that matches the target architecture (optional).
+OS version. If you want to supply your own image and preseeding file, you need
+to set the `SOURCE` and `TARGET` variables, accordingly.
+
+`LABEL` is the CD volume label and `USBDEV` is the device that represents your
+usb stick. The latter is needed for `make usb` and `make FAT` Be **extra
+careful** to set `USBDEV` correctly! If you set it incorrectly, you may
+overwrite your system disk!  `QEMU` is the name of the qemu-system binary that
+matches the target architecture (optional).
 
 ### Console parameters
 
@@ -133,7 +136,8 @@ this Makefile expects a preseeding file so you need to supply something.
 
 ## Download the Debian installation image
 
-Download a Debian `netinst` installation image:
+Download a Debian `netinst` installation image (based on `ARCH` and `RELEASE_NO`
+configured, above):
 
     make download
 
