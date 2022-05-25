@@ -71,24 +71,28 @@ ${TMP}: ${SOURCE}
 	chmod -R +w $@
 
 # Create a minimal isolinux config. no menu, no prompt.
+.PHONY: ${TMP}/isolinux/isolinux.cfg
 .ONESHELL:
 ${TMP}/isolinux/isolinux.cfg: ${ISOLINUX_CFG_TEMPLATE}
 	sed -e "s/<ARCH>/${ARCHFOLDER}/g" \
 		-e "s/<CONSOLE>/console=${CONSOLE}/g" \
 		$< > $@
 
+.PHONY: ${TMP}/boot/grub/grub.cfg
 ${TMP}/boot/grub/grub.cfg: ${GRUB_CFG_TEMPLATE}
 	sed -e "s/<ARCH>/${ARCHFOLDER}/g" \
 		-e "s/<CONSOLE>/console=${CONSOLE}/g" \
 		$< > $@
 
 # Write the preseed file to initrd.
+.PHONY: ${TMP}/install.${ARCHFOLDER}/initrd.gz
 ${TMP}/install.${ARCHFOLDER}/initrd.gz: ${PRESEED}
 	gunzip ${TMP}/install.${ARCHFOLDER}/initrd.gz
 	echo ${PRESEED} | cpio -H newc -o -A -F ${TMP}/install.${ARCHFOLDER}/initrd
 	gzip ${TMP}/install.${ARCHFOLDER}/initrd
 
 # Recreate the MD5 sums of all files.
+.PHONY: ${TMP}/md5sum.txt
 ${TMP}/md5sum.txt: ${TMP} ${TMP}/isolinux/isolinux.cfg ${TMP}/install.${ARCHFOLDER}/initrd.gz
 	find ${TMP}/ -type f -exec md5sum {} \; > $@
 
