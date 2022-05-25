@@ -1,7 +1,7 @@
 # Configuration
 
 # Debian release
-RELEASE_NO = 11.2.0
+RELEASE_NO = 11.3.0
 
 # Architecture settings
 ARCH = amd64
