@@ -12,13 +12,13 @@ via ssh or serial console.
     # Edit the configuration variables
     make config
 
-    # Get a netinst image
+    # download the lates Debian netinst image for `ARCH`
     make download
 
     # Create and adapt preseed.cfg
-    cp minimal-preseed.cfg preseed.cfg
+    cp templates/minimal-preseed.cfg preseed.cfg
 
-    vim preseed.cfg
+    edit preseed.cfg
 
     # Build image
     make image
@@ -73,30 +73,26 @@ Edit `Makevars` and set the variables to match your situation. You can use
 
 to do so. 
 
-### Image
 
-At the very minimum you need to set the following variables – e.g.:
+### Image names, architecture and usb device
 
-    RELEASE_NO = 11.2.0
-    ARCH = amd64
-    USBDEV = /dev/sdc
+At the very minimum you need to set the following variables:
 
-Please set `RELEASE_NO` for the Debian release you want to install. This is used to 
-download the `example-preseed.cfg` file that matches your release and to construct
-the correct image filenames. 
+`SOURCE`: the name of your stock Debian ISO image file.
+
+`TARGET` the name of the remastered ISO image.
 
 `ARCH` indicates the target processor architecture – `amd64` or `i386` (other
-architectures like AMD are not supported).  This variable is used to construct
-the correct Debian image name, identify the installation folder in the image
-(`install.amd`) and download the correct preseeding example file for your
-OS version. If you want to supply your own image and preseeding file, you need
-to set the `SOURCE` and `TARGET` variables, accordingly.
+architectures are not supported).  This variable is used to identify the
+installation folder in the image (`install.amd`) and to determine which
+image to download.
 
-`LABEL` is the CD volume label and `USBDEV` is the device that represents your
-usb stick. The latter is needed for `make usb` and `make FAT` Be **extra
-careful** to set `USBDEV` correctly! If you set it incorrectly, you may
-overwrite your system disk!  `QEMU` is the name of the qemu-system binary that
-matches the target architecture (optional).
+`LABEL` is the CD volume label. It *must* be ≤ 32 chars in length.
+
+`USBDEV` is the device file that represents your usb stick. The latter is
+needed for `make usb` and `make FAT`. Be **extra careful** to set `USBDEV`
+correctly! If you set it incorrectly, you may overwrite your system disk!
+
 
 ### Console parameters
 
@@ -111,39 +107,54 @@ the time:
 When the serial console is active, *all output* is redirected to the serial
 interface and you will not see boot messages or the installer on a connected
 screen after that point. Accordingly, normal local installation will not work.
-If you want your image to allow local installations, instead, you may set
+If you want your image to allow local installation (i.e. non-headless),
+instead, you may set
 
     CONSOLE = tty0
 
+
 ## Preseeding
 
-A `minimal-preseed.cfg` file is included. That file configures the bare minimum
-to get past the installer questions before the ssh connection becomes
-available. To get a full `example-preeed.cfg` file directly from Debian, `make
-example-preseed.cfg`. Use any of these files as a template to create a custom
-configuration file. This is also the place to configure the login password for
-the network installation. For comprehensive information on preseeding, study
+Preseeding is Debian's method to automatically answer some or all of the
+configuration questions you usually have to answer during the installation
+process.
+
+You *must provide* a `preseeding.cfg` file for headless installation!
+
+The file `minimal-preseed.cfg` is included (in the `templates` folder). That file
+configures the bare minimum to get past the installer questions before the ssh
+connection becomes available. To use it make a copy:
+    
+    cp templates/minimal-preseed.cfg preseed.cfg
+
+Please edit the file – at least change the password...
+
+If the minimal file does not cover all your needs, get a full template
+
+    make example-preseed.cfg
+    cp example-preseed.cfg preseed.cfg
+
+and modify it to you needs. For comprehensive information on preseeding, study
 this:
 
 <https://www.debian.org/releases/stable/amd64/apb.en.html>
 
-You can override the automatic generation of source/target file names and image
-label by setting the respective variables in the config file. 
+or
 
-For installation via serial console, preseeding is not really necessary but
-this Makefile expects a preseeding file so you need to supply something.
+<https://www.debian.org/releases/stable/i386/apb.en.html>
 
 
 ## Download the Debian installation image
 
-Download a Debian `netinst` installation image (based on `ARCH` and `RELEASE_NO`
-configured, above):
+You can just download the latest Debian netinst image with
 
     make download
 
-If you want to start off an image other than Debian netinst, you can provide it
-yourself and set the `SOURCE` variable in the config file (`make config`)
-accordingly.
+If is is not the image you want to start wiht, just download/provide on
+yourself and save it in the folder where this Makefile lives.  
+
+IN nay case, make sure to set the `SOURCE` variable in the config file (`make
+config`) to match the image name.
 
 
 ## Building the ISO
@@ -234,11 +245,10 @@ able to ping it. Now log in and complete the installation remotely:
     ssh installer@yourmachine
 
 The default password is `r00tme`; it can (and should!) be configured in the
-preseeding file.  Alternatively, set a host key in preseeding for passwordless
-login.
+preseeding file. 
 
 NOTE: The included `minimal-preseed.cfg` assumes that you are connected via
-ethernet (as a server should be). If you want to/must use a wifi connection you
+LAN cable (as a server should be). If you want to/must use a WIFI connection you
 need to configure this.
 
 

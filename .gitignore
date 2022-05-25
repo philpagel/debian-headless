@@ -1,5 +1,6 @@
 *.iso
 *.qcow
+*.swp
 preseed.cfg
 tmp/
 todo.md

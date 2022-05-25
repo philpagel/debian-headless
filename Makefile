@@ -4,10 +4,10 @@ help:
 	@echo
 	@echo "Usage:"
 	@echo
-	@echo "  make config                Edit configuration (Makevars)"
 	@echo "  make install-depends       Install dependencies"
-	@echo "  make download              download latest Debian netinst image"
-	@echo "  make example-preseed.cfg   download preseed.cfg from Debian"
+	@echo "  make config                Edit configuration (Makevars)"
+	@echo "  make download              download *latest* Debian netinst image"
+	@echo "  make example-preseed.cfg   download example-preseed.cfg from Debian"
 	@echo "  make image                 Build the ISO image"
 	@echo "  make qemu-bios             Boot ISO image in QEMU (BIOS mode)"
 	@echo "  make qemu-uefi             Boot ISO image in QEMU (UEFI boot)"
@@ -26,34 +26,34 @@ install-depends:
 		libarchive-tools syslinux syslinux-utils cpio genisoimage \
 		coreutils qemu-system qemu-system-x86 qemu-utils util-linux
 
-example-preseed.cfg:
-	wget -N -O $@ https://www.debian.org/releases/$(RELEASE_NAME)/example-preseed.txt
-
+.PHONY: config
+config:
+	edit Makevars
 
 .PHONY: download
 .ONESHELL:
 download:
 	set -e
 	TMPFILE=`mktemp -p ./`
-	wget -O $$TMPFILE https://www.debian.org/download
-	IMGURL=`grep -o -P -e "https://cdimage.debian.org/.*?netinst.iso" $$TMPFILE | head -n1`
+	wget -O $$TMPFILE https://www.debian.org/CD/netinst/
+	IMGURL=`grep -o -P -e "https://cdimage.debian.org/debian-cd/current/${ARCH}/iso-cd/debian.*?netinst.iso" $$TMPFILE | head -n1`
 	wget -N $$IMGURL
 	rm -f $$TMPFILE
 
-.PHONY: config
-config:
-	edit Makevars
+example-preseed.cfg:
+	wget -N -O $@ https://www.debian.org/releases/stable/example-preseed.txt
+
 
 .PHONY: image
 image: ${TARGET}
 
 # Create ISO and fix MBR for USB boot.
 ${TARGET}: ${TMP} \
-           ${TMP}/isolinux/isolinux.cfg \
-		   ${TMP}/boot/grub/grub.cfg \
-           ${TMP}/install.${ARCHFOLDER}/initrd.gz \
-           ${TMP}/md5sum.txt \
-		   Makevars
+	${TMP}/isolinux/isolinux.cfg \
+	${TMP}/boot/grub/grub.cfg \
+	${TMP}/install.${ARCHFOLDER}/initrd.gz \
+	${TMP}/md5sum.txt \
+	Makevars
 
 	genisoimage -V ${LABEL} \
 		-r -J -b isolinux/isolinux.bin -c isolinux/boot.cat \
@@ -86,10 +86,14 @@ ${TMP}/boot/grub/grub.cfg: ${GRUB_CFG_TEMPLATE}
 
 # Write the preseed file to initrd.
 .PHONY: ${TMP}/install.${ARCHFOLDER}/initrd.gz
-${TMP}/install.${ARCHFOLDER}/initrd.gz: ${PRESEED}
+${TMP}/install.${ARCHFOLDER}/initrd.gz: preseed.cfg
 	gunzip ${TMP}/install.${ARCHFOLDER}/initrd.gz
-	echo ${PRESEED} | cpio -H newc -o -A -F ${TMP}/install.${ARCHFOLDER}/initrd
+	echo preseed.cfg | cpio -H newc -o -A -F ${TMP}/install.${ARCHFOLDER}/initrd
 	gzip ${TMP}/install.${ARCHFOLDER}/initrd
+
+
+preseed.cfg:
+	$(error "Error: cannot find preseeding file 'preseed.cfg'. Please provide it.")
 
 # Recreate the MD5 sums of all files.
 .PHONY: ${TMP}/md5sum.txt
@@ -163,8 +167,8 @@ FAT:
 clean:
 	rm -rf ${TMP}
 	rm -f image.qcow
-	rm -f example-preseed.cfg
 
 .PHONY: maintainer-clean
 maintainer-clean: clean
 	rm -f ${TARGET}
+	rm -f example-preseed.cfg

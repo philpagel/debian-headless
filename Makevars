@@ -1,9 +1,15 @@
 # Configuration
 
-# Debian release
-RELEASE_NO = 11.3.0
+# Source ISO image file
+SOURCE = debian-11.3.0-amd64-netinst.iso
 
-# Architecture settings
+# Target ISO image file
+TARGET = debian-11.3.0-amd64-netinst-hl.iso
+
+# Image label (must be ≤ 32 chars)
+LABEL = Debian-11.3.0-amd64-headless
+
+# Machine architecture (only `amd64` or `i368` will work)
 ARCH = amd64
 #ARCH = i386
 
@@ -11,6 +17,12 @@ ARCH = amd64
 # CAUTION: if set incorrectly you may ruin your system!
 USBDEV = /dev/null
 #USBDEV = /dev/sda
+
+
+
+############################################################
+# You can probalby leave alone everything below this line 
+############################################################
 
 # Console configuration
 #
@@ -27,70 +39,22 @@ USBDEV = /dev/null
 # 9600n8. The maximum baudrate is 115200.
 # For serial console:
 CONSOLE = ttyS0,115200n8
-# For local console:
+# For local console (normal non-headless installation):
 # CONSOLE = tty0
-
-
-############################################################
-# Uncomment and edit the following to override automatic 
-# names
-# LABEL ≤ 32 chars
-############################################################
-
-#SOURCE =
-#TARGET = 
-#LABEL = 
-
-############################################################
-# you may safely leave these untouched
-############################################################
 
 # Folder for image unpacking
 TMP = tmp
 
-# Preseeding file to use
-PRESEED = preseed.cfg
+ISOLINUX_CFG_TEMPLATE = templates/isolinux.cfg.template
+GRUB_CFG_TEMPLATE = templates/grub.cfg.template
 
-
-############################################################
-# nothing to configure below this line
-############################################################
-
-ISOLINUX_CFG_TEMPLATE = isolinux.cfg.template
-GRUB_CFG_TEMPLATE = grub.cfg.template
-
-# set architecture dependent variables
+# set architecture-dependent variables
 ifeq "${ARCH}" "amd64" 
     ARCHFOLDER = amd
     QEMU = qemu-system-x86_64
 else ifeq "${ARCH}" "i386"
     ARCHFOLDER = 386
     QEMU = qemu-system-i386
-endif
-
-# Used to download example-preseed.cfg for your target Debian release.
-MAJOR = $(firstword $(subst ., ,${RELEASE_NO}))
-ifeq "${MAJOR}" "13"
-    RELEASE_NAME = Trixie
-else ifeq "${MAJOR}" "12"
-    RELEASE_NAME = Bookworm
-else ifeq "${MAJOR}" "11"
-    RELEASE_NAME = bullseye
-else ifeq "${MAJOR}" "10"
-    RELEASE_NAME = buster
-else ifeq "${MAJOR}" "9"
-    RELEASE_NAME = stretch
-endif
-
-# source, target and label
-ifndef SOURCE
-    SOURCE = debian-${RELEASE_NO}-${ARCH}-netinst.iso
-endif
-ifndef TARGET
-    TARGET = $(subst .iso,-hl.iso,${SOURCE})
-endif
-ifndef LABEL
-    LABEL = $(subst .iso,-hl,${SOURCE})
 endif
 
 # vim: set syntax=make :
