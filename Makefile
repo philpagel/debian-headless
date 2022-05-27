@@ -1,4 +1,5 @@
 include Makevars
+.PHONY: help install-depends config download image unpack bootconfig preseed md5 iso qemu-bios qemu-uefi usb FAT clean maintainer-clean
 
 help:
 	@echo
@@ -19,18 +20,14 @@ help:
 	@echo "See README.md for details"
 	@echo
 
-
-.PHONY: install-depends
 install-depends:
 	sudo apt-get install \
 		libarchive-tools syslinux syslinux-utils cpio genisoimage \
 		coreutils qemu-system qemu-system-x86 qemu-utils util-linux
 
-.PHONY: config
 config:
 	edit Makevars
 
-.PHONY: download
 .ONESHELL:
 download:
 	set -e
@@ -43,66 +40,50 @@ download:
 example-preseed.cfg:
 	wget -N -O $@ https://www.debian.org/releases/stable/example-preseed.txt
 
+image: unpack bootconfig preseed md5sums iso 
 
-.PHONY: image
-image: ${TARGET}
+unpack:
+	# Unpack the image to the folder and set write permissions.
+	rm -rf ${TMP}
+	mkdir ${TMP}
+	bsdtar -C ${TMP} -xf ${SOURCE}
+	chmod -R +w ${TMP}
 
-# Create ISO and fix MBR for USB boot.
-${TARGET}: ${TMP} \
-	${TMP}/isolinux/isolinux.cfg \
-	${TMP}/boot/grub/grub.cfg \
-	${TMP}/install.${ARCHFOLDER}/initrd.gz \
-	${TMP}/md5sum.txt \
-	Makevars
+bootconfig: 
+	# Create a minimal boot config – no menu, no prompt
+	# isolinux (BIOS)
+	sed -e "s/<ARCH>/${ARCHFOLDER}/g" \
+		-e "s/<CONSOLE>/console=${CONSOLE}/g" \
+		${ISOLINUX_CFG_TEMPLATE} > ${TMP}/isolinux/isolinux.cfg
+	# grub (UEFI)
+	sed -e "s/<ARCH>/${ARCHFOLDER}/g" \
+		-e "s/<CONSOLE>/console=${CONSOLE}/g" \
+		${GRUB_CFG_TEMPLATE} > ${TMP}/boot/grub/grub.cfg
 
+preseed: preseed.cfg
+	# Write the preseed file to initrd.
+	gunzip ${TMP}/install.${ARCHFOLDER}/initrd.gz
+	echo preseed.cfg | cpio -H newc -o -A -F ${TMP}/install.${ARCHFOLDER}/initrd
+	gzip ${TMP}/install.${ARCHFOLDER}/initrd
+
+md5sums:
+	# Recreate the MD5 sums of all files.
+	find ${TMP}/ -type f -exec md5sum {} \; > ${TMP}/md5sum.txt
+
+
+iso: ${TMP}
+	# Create ISO and fix MBR for USB boot.
 	genisoimage -V ${LABEL} \
 		-r -J -b isolinux/isolinux.bin -c isolinux/boot.cat \
 		-no-emul-boot -boot-load-size 4 -boot-info-table \
 		-eltorito-alt-boot \
 		-e ${tmp} boot/grub/efi.img \
 		-no-emul-boot \
-		-o $@ ${TMP}
-	isohybrid --uefi $@
+		-o ${TARGET} ${TMP}
+	isohybrid --uefi ${TARGET}
 
-# Unpack the image to the folder and set write permissions.
-${TMP}: ${SOURCE}
-	mkdir $@
-	bsdtar -C $@ -xf $<
-	chmod -R +w $@
-
-# Create a minimal isolinux config. no menu, no prompt.
-.PHONY: ${TMP}/isolinux/isolinux.cfg
-.ONESHELL:
-${TMP}/isolinux/isolinux.cfg: ${ISOLINUX_CFG_TEMPLATE}
-	sed -e "s/<ARCH>/${ARCHFOLDER}/g" \
-		-e "s/<CONSOLE>/console=${CONSOLE}/g" \
-		$< > $@
-
-.PHONY: ${TMP}/boot/grub/grub.cfg
-${TMP}/boot/grub/grub.cfg: ${GRUB_CFG_TEMPLATE}
-	sed -e "s/<ARCH>/${ARCHFOLDER}/g" \
-		-e "s/<CONSOLE>/console=${CONSOLE}/g" \
-		$< > $@
-
-# Write the preseed file to initrd.
-.PHONY: ${TMP}/install.${ARCHFOLDER}/initrd.gz
-${TMP}/install.${ARCHFOLDER}/initrd.gz: preseed.cfg
-	gunzip ${TMP}/install.${ARCHFOLDER}/initrd.gz
-	echo preseed.cfg | cpio -H newc -o -A -F ${TMP}/install.${ARCHFOLDER}/initrd
-	gzip ${TMP}/install.${ARCHFOLDER}/initrd
-
-
-preseed.cfg:
-	$(error "Error: cannot find preseeding file 'preseed.cfg'. Please provide it.")
-
-# Recreate the MD5 sums of all files.
-.PHONY: ${TMP}/md5sum.txt
-${TMP}/md5sum.txt: ${TMP} ${TMP}/isolinux/isolinux.cfg ${TMP}/install.${ARCHFOLDER}/initrd.gz
-	find ${TMP}/ -type f -exec md5sum {} \; > $@
-
-# boot image in qemu (BIOS mode)
-.PHONY: qemu-bios
-qemu-bios: ${TARGET} image.qcow
+qemu-bios: image.qcow
+	# boot image in qemu (BIOS mode)
 	@echo
 	@echo "Once the installer has launched networking you can log in:\n"
 	@echo "    ssh installer@localhost -p22222\n"
@@ -114,11 +95,10 @@ qemu-bios: ${TARGET} image.qcow
 		-net nic \
 		-hda image.qcow \
 		-serial telnet:localhost:33333,server,nowait \
-		-cdrom $<
+		-cdrom ${TARGET}
 
-# boot image in qemu (UEFI mode)
-.PHONY: qemu-uefi
-qemu-uefi: ${TARGET} image.qcow
+qemu-uefi: image.qcow
+	# boot image in qemu (UEFI mode)
 	@echo
 	@echo "Once the installer has launched networking you can log in:\n"
 	@echo "    ssh installer@localhost -p22222\n"
@@ -131,15 +111,14 @@ qemu-uefi: ${TARGET} image.qcow
 		-net nic \
 		-hda image.qcow \
 		-serial telnet:localhost:33333,server,nowait \
-		-cdrom $<
+		-cdrom ${TARGET}
 
-# Create a virtual disk for QEMU.
 image.qcow:
+	# Create a virtual disk for QEMU.
 	qemu-img create -f qcow2 $@ 10G
 
-# Write the image to usb stick.
-.PHONY: usb
 usb:
+	# Write the image to usb stick.
 	@echo "This will overwrite all data on ${USBDEV}!"
 	@read -p "Type 'yes' if you really want to do this: " proceed; \
 	if [ $$proceed = "yes" ] ; then \
@@ -150,9 +129,8 @@ usb:
 		echo "Aborting" ; \
 	fi
 
-# Add a FAT partition in the remaining free space (e.g. for driver files).
-.PHONY: FAT
 FAT:
+	# Add a FAT partition in the remaining free space (e.g. for driver files).
 	@echo "This will overwrite ${USBDEV}!"
 	@read -p "Type 'yes' if you really want to do this: " proceed; \
 	if [ $$proceed = "yes" ] ; then \
@@ -163,12 +141,11 @@ FAT:
 		echo "Aborting" ; \
 	fi
 
-.PHONY: clean
 clean:
 	rm -rf ${TMP}
 	rm -f image.qcow
 
-.PHONY: maintainer-clean
 maintainer-clean: clean
 	rm -f ${TARGET}
 	rm -f example-preseed.cfg
+

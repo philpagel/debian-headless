@@ -9,15 +9,13 @@ via ssh or serial console.
 
 ## In a nutshell
 
+    # download the latest Debian netinst image for `ARCH`
+    make download
+
     # Edit the configuration variables
     make config
 
-    # download the lates Debian netinst image for `ARCH`
-    make download
-
-    # Create and adapt preseed.cfg
-    cp templates/minimal-preseed.cfg preseed.cfg
-
+    # Adapt preseed.cfg
     edit preseed.cfg
 
     # Build image
@@ -50,8 +48,13 @@ Another possible route for headless installation is via serial console. That
 can either be a physical RS-232 cable or a virtual serial port provided by a
 remote management module/software such as HPEs iLO or something similar.
 
+## Known quirks and issues
 
-## Known problems
+The Makefile we use here to implement all functionality intentionally lacks
+some of the typical Make magic: Targets don't track dependencies so you will
+have to rebuild everything, whenever you change something. So please `make
+clean`, first. Yes – a full build will cost you a valuable six seconds every
+time. Use them to worship code simplicity.
 
 I didn't have much luck with booting i386 images via UEFI – neither the stock
 Debian images nor the remastered ones. But maybe it's just my particular
@@ -63,6 +66,19 @@ machine/BIOS...
 Make sure all necessary tools are installed:
 
     make install-depends
+
+
+## Download the Debian installation image
+
+You can just download the latest Debian netinst image with
+
+    make download
+
+If is is not the image you want to start wiht, just download/provide on
+yourself and save it in the folder where this Makefile lives.  
+
+IN nay case, make sure to set the `SOURCE` variable in the config file (`make
+config`) to match the image name.
 
 
 ## Configuration
@@ -142,19 +158,6 @@ this:
 or
 
 <https://www.debian.org/releases/stable/i386/apb.en.html>
-
-
-## Download the Debian installation image
-
-You can just download the latest Debian netinst image with
-
-    make download
-
-If is is not the image you want to start wiht, just download/provide on
-yourself and save it in the folder where this Makefile lives.  
-
-IN nay case, make sure to set the `SOURCE` variable in the config file (`make
-config`) to match the image name.
 
 
 ## Building the ISO
@@ -275,9 +278,4 @@ the manufacturers instructions on how to connect to it.
 Just because it took me a while to realize: The Debian remote-installer uses
 `screen` to provide multiple virtual consoles. You can switch between them with
 `CTRL-a TAB`. See `man screen` for more information.
-
-It shouldn't be too hard to adapt this to other distributions such as
-Ubuntu. However, I don't feel like doing that – mostly because it will make
-things more complex but also because, in my view, Ubuntu is mostly a desktop
-distribution and desktops have keyboards and screens, by definition.
 

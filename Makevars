@@ -18,8 +18,6 @@ ARCH = amd64
 USBDEV = /dev/null
 #USBDEV = /dev/sda
 
-
-
 ############################################################
 # You can probalby leave alone everything below this line 
 ############################################################
