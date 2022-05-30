@@ -137,18 +137,14 @@ process.
 
 You *must provide* a `preseeding.cfg` file for headless installation!
 
-The file `minimal-preseed.cfg` is included (in the `templates` folder). That file
-configures the bare minimum to get past the installer questions before the ssh
-connection becomes available. To use it make a copy:
-    
-    cp templates/minimal-preseed.cfg preseed.cfg
-
-Please edit the file – at least change the password...
+The included `preseed.cfg` file configures the bare minimum to get past the
+installer questions so that network and ssh can be launched.  Please edit the
+file – at least change the password...
 
 If the minimal file does not cover all your needs, get a full template
 
     make example-preseed.cfg
-    cp example-preseed.cfg preseed.cfg
+    mv example-preseed.cfg preseed.cfg
 
 and modify it to you needs. For comprehensive information on preseeding, study
 this:
