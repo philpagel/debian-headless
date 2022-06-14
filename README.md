@@ -87,7 +87,8 @@ Edit `Makevars` and set the variables to match your situation. You can use
 
     make config
 
-to do so. 
+to do so. This should work on most Debian-based systems. If it doesn't, just edit
+the `Makevars` file with your preferred text editor.
 
 
 ### Image names, architecture and usb device
