@@ -77,7 +77,7 @@ You can just download the latest Debian netinst image with
 If is is not the image you want to start wiht, just download/provide on
 yourself and save it in the folder where this Makefile lives.  
 
-IN nay case, make sure to set the `SOURCE` variable in the config file (`make
+In any case, make sure to set the `SOURCE` variable in the config file (`make
 config`) to match the image name.
 
 
