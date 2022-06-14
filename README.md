@@ -147,7 +147,7 @@ If the minimal file does not cover all your needs, get a full template
     make example-preseed.cfg
     mv example-preseed.cfg preseed.cfg
 
-and modify it to you needs. For comprehensive information on preseeding, study
+and modify it to your needs. For comprehensive information on preseeding, study
 this:
 
 <https://www.debian.org/releases/stable/amd64/apb.en.html>
@@ -199,6 +199,9 @@ Or via serial console:
 
 So you can test-drive the installation before trying it on a real server.  The
 default password is `r00tme` – please change it in the preseeding file.
+Alternatively, you can configure passwordless login via ssh key file – there
+is example code in the `preseed.cfg`. For this to work, you need to provide the
+key file from a local web server.
 
 And here a little screenshot of what that looks like in qemu. The two bottom
 panels show the local screen (left) and the serial console (right):
