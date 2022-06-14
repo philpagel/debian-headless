@@ -248,7 +248,9 @@ able to ping it. Now log in and complete the installation remotely:
     ssh installer@yourmachine
 
 The default password is `r00tme`; it can (and should!) be configured in the
-preseeding file. 
+preseeding file.  Alternatively, you can configure passwordless login via ssh
+key file – there is example code in the `preseed.cfg`. For this to work, you
+need to provide the key file from a local web server.
 
 NOTE: The included `minimal-preseed.cfg` assumes that you are connected via
 LAN cable (as a server should be). If you want to/must use a WIFI connection you
