@@ -8,12 +8,12 @@ This little tool will remaster a stock Debian image for 100% remote installation
 via ssh or serial console.
 
 ## In a nutshell
+    
+    # Edit the configuration variables
+    make config
 
     # download the latest Debian netinst image for `ARCH`
     make download
-
-    # Edit the configuration variables
-    make config
 
     # Adapt preseed.cfg
     edit preseed.cfg
@@ -68,19 +68,6 @@ Make sure all necessary tools are installed:
     make install-depends
 
 
-## Download the Debian installation image
-
-You can just download the latest Debian netinst image with
-
-    make download
-
-If is is not the image you want to start wiht, just download/provide on
-yourself and save it in the folder where this Makefile lives.  
-
-In any case, make sure to set the `SOURCE` variable in the config file (`make
-config`) to match the image name.
-
-
 ## Configuration
 
 Edit `Makevars` and set the variables to match your situation. You can use 
@@ -128,6 +115,21 @@ If you want your image to allow local installation (i.e. non-headless),
 instead, you may set
 
     CONSOLE = tty0
+
+
+
+## Download Debian installation image
+
+You can just download the latest Debian netinst image with
+
+    make download
+
+If is is not the image you want to start wiht, just download/provide on
+yourself and save it in the folder where this Makefile lives.  
+
+In any case, make sure to set the `SOURCE` variable in the config file (`make
+config`) to match the image name.
+
 
 
 ## Preseeding
