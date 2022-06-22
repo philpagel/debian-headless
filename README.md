@@ -173,11 +173,10 @@ you can do [here](https://wiki.debian.org/DebianInstaller/Modify/CD). But you
 don't need to manually follow the steps for re-creating md5 sums and assembling
 the image.
 
-To pack your changes into the image just run
+To pack your changes into the image just run the last steps manually, again:
 
-    make image
-
-again.
+    make md5sums
+    make iso
 
 
 ## Dry run it
