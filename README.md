@@ -138,7 +138,7 @@ Preseeding is Debian's method to automatically answer some or all of the
 configuration questions you usually have to answer during the installation
 process.
 
-You *must provide* a `preseeding.cfg` file for headless installation!
+You *must provide* a `preseed.cfg` file for headless installation!
 
 The included `preseed.cfg` file configures the bare minimum to get past the
 installer questions so that network and ssh can be launched.  Please edit the
