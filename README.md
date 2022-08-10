@@ -1,8 +1,9 @@
 # Debian headless/remote installation
 
-Installing Debian is easy enough – but what if you have no physical access to the 
-target machine? Stock images require at least a few keyboard interactions before
-you can continue the installation, remotely.
+Installing Debian is easy enough – but what if you have no physical access to
+the target machine or it has no screen or keyboard? Stock images require at
+least some local key stroke before you can continue the installation,
+remotely...
 
 This little tool will remaster a stock Debian image for 100% remote installation
 via ssh or serial console.
@@ -27,16 +28,15 @@ via ssh or serial console.
 
 ## Motivation
 
-I wanted to install Debian on a server remotely – i.e. without any keyboard
-access or the chance to peek at a temporarily connected screen. I found plenty
-of information on the net but none of the tutorials really worked for me. Some
-included preseeding the image but failed to automatically start the
-installation without a key press, others seemed to customize a zillion things
-but ended up getting stuck in some error message or other.  The problem with
-ssh remote installation with stock images is that they still require some
-initial human interaction to select the desired menu option and some basic
-setup before the network is configured. That makes the whole point of remote
-installation moot...
+I wanted to install Debian on a server remotely – i.e. without keyboard access
+or the chance to peek at a physical screen. I found plenty of information on
+the net but none of the tutorials really worked for me. Some included
+preseeding the image but failed to automatically start the installation without
+a key press, others seemed to customize a zillion things but ended up getting
+stuck in some error message or other.  The problem with ssh remote installation
+with stock images is that they still require some initial human interaction to
+select the desired menu option and some basic setup before the network is
+configured. That makes the whole point of remote installation moot...
 
 So I read my way through lots of tutorials and put together a slim working
 solution – at least working for me. So here is my minimal and lazy solution to
@@ -91,11 +91,12 @@ architectures are not supported).  This variable is used to identify the
 installation folder in the image (`install.amd`) and to determine which
 image to download.
 
-`LABEL` is the CD volume label. It *must* be ≤ 32 chars in length.
-
 `USBDEV` is the device file that represents your usb stick. The latter is
 needed for `make usb` and `make FAT`. Be **extra careful** to set `USBDEV`
 correctly! If you set it incorrectly, you may overwrite your system disk!
+
+`LABEL` is the CD volume label. It *must* be ≤ 32 chars in length.
+
 
 
 ### Console parameters
@@ -124,7 +125,7 @@ You can just download the latest Debian netinst image with
 
     make download
 
-If is is not the image you want to start wiht, just download/provide on
+If this is not the image you want to start with, just download/provide one
 yourself and save it in the folder where this Makefile lives.  
 
 In any case, make sure to set the `SOURCE` variable in the config file (`make
@@ -134,7 +135,7 @@ config`) to match the image name.
 
 ## Preseeding
 
-Preseeding is Debian's method to automatically answer some or all of the
+Preseeding is Debian's method of automatically answering some or all of the
 configuration questions you usually have to answer during the installation
 process.
 
