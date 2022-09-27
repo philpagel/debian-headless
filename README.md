@@ -2,7 +2,7 @@
 
 Installing Debian is easy enough – but what if you have no physical access to
 the target machine or it has no screen or keyboard? Stock images require at
-least some local key stroke before you can continue the installation,
+least a few local key strokes before you can continue the installation,
 remotely...
 
 This little tool will remaster a stock Debian image for 100% remote installation
@@ -121,7 +121,7 @@ instead, you may set
 
 ## Download Debian installation image
 
-You can just download the latest Debian netinst image with
+You can just download the latest Debian *netinst* image with
 
     make download
 
@@ -203,7 +203,9 @@ So you can test-drive the installation before trying it on a real server.  The
 default password is `r00tme` – please change it in the preseeding file.
 Alternatively, you can configure passwordless login via ssh key file – there
 is example code in the `preseed.cfg`. For this to work, you need to provide the
-key file from a local web server.
+key file from a local web server. In pinch, this may be all you need:
+
+    python3 -m http.server
 
 And here a little screenshot of what that looks like in qemu. The two bottom
 panels show the local screen (left) and the serial console (right):
@@ -254,7 +256,7 @@ preseeding file.  Alternatively, you can configure passwordless login via ssh
 key file – there is example code in the `preseed.cfg`. For this to work, you
 need to provide the key file from a local web server.
 
-NOTE: The included `minimal-preseed.cfg` assumes that you are connected via
+NOTE: The included minimal `preseed.cfg` assumes that you are connected via
 LAN cable (as a server should be). If you want to/must use a WIFI connection you
 need to configure this.
 

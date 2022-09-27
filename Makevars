@@ -1,13 +1,13 @@
 # Configuration
 
 # Source ISO image file
-SOURCE = debian-11.4.0-amd64-netinst.iso
+SOURCE = debian-11.5.0-amd64-netinst.iso
 
 # Target ISO image file
-TARGET = debian-11.4.0-amd64-netinst-hl.iso
+TARGET = debian-11.5.0-amd64-netinst-hl.iso
 
 # Image label (must be ≤ 32 chars)
-LABEL = Debian-11.4.0-amd64-headless
+LABEL = Debian-11.5.0-amd64-headless
 
 # Machine architecture (only `amd64` or `i368` will work)
 ARCH = amd64
