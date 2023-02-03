@@ -1,13 +1,13 @@
 # Configuration
 
 # Source ISO image file
-SOURCE = debian-11.5.0-amd64-netinst.iso
+SOURCE = debian-11.6.0-amd64-netinst.iso
 
 # Target ISO image file
-TARGET = debian-11.5.0-amd64-netinst-hl.iso
+TARGET = debian-11.6.0-amd64-netinst-hl.iso
 
 # Image label (must be ≤ 32 chars)
-LABEL = Debian-11.5.0-amd64-headless
+LABEL = Debian-11.6.0-amd64-headless
 
 # Machine architecture (only `amd64` or `i368` will work)
 ARCH = amd64
@@ -38,7 +38,7 @@ USBDEV = /dev/null
 # For serial console:
 CONSOLE = ttyS0,115200n8
 # For local console (normal non-headless installation):
-# CONSOLE = tty0
+#CONSOLE = tty0
 
 # Folder for image unpacking
 TMP = tmp
