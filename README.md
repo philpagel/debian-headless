@@ -25,6 +25,12 @@ via ssh or serial console.
     # Write image to usb stick
     make usb
 
+## Building with Docker
+
+    make config
+    edit preseed.cfg
+    docker build --tag debian-headless .
+    docker run -it --volume ./output:/output --rm debian-headless
 
 ## Motivation
 
