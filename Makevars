@@ -36,7 +36,7 @@ USBDEV = /dev/null
 # and F is flow control ('r' for RTS). Default is
 # 9600n8. The maximum baudrate is 115200.
 # For serial console:
-CONSOLE = ttyS1,115200n8
+CONSOLE = ttyS0,115200n8
 # For local console (normal non-headless installation):
 #CONSOLE = tty0
 
