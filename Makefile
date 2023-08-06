@@ -26,7 +26,7 @@ install-depends:
 		coreutils qemu-system qemu-system-x86 qemu-utils util-linux
 
 config:
-	editor Makevars
+	"$(if $(EDITOR),$(EDITOR),editor)" Makevars
 
 .ONESHELL:
 download:
