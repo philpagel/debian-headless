@@ -285,3 +285,10 @@ Just because it took me a while to realize: The Debian remote-installer uses
 `screen` to provide multiple virtual consoles. You can switch between them with
 `CTRL-a TAB`. See `man screen` for more information.
 
+
+# Contributing
+
+If you found a bug or have an idea for improvements, feel free to open an issue and
+describe the fix or feature you have in mind. Please don't submit a pull request
+without discussing it, first.
+
