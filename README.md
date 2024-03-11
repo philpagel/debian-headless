@@ -63,7 +63,16 @@ machine/BIOS...
 
 ## Dependencies
 
-Make sure all necessary tools are installed:
+This tool was developed and tested on Debian LINUX. While all major LINUX
+distributions are likely to offer the necessary pieces of software, there may
+be some non-obvious differences. Accordingly, I recommend to run this on a
+Debian system. If you don't have one, you may try a VM or container running
+Debian. One difference that I am aware of is that many distributions use
+either `genisoimage` or `mkisofs` and make one of them a symbolic link to the
+other. In this particular case, they are not interchangeable – `genisoimage`
+is required.
+
+To install all necessary tools run:
 
     make install-depends
 
