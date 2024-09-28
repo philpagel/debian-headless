@@ -253,13 +253,13 @@ you would like to use during installation.
 ## Building in a non-Debian environment
 
 The build process works on Debian machines. However, some users want to install
-a headless debian machien but don't run Debian on their own computer. If you
+a headless Debian machine but don't run Debian on their own computer. If you
 run into problems building the image on your OS, you can use the `docker-image`
 target.  This will build a minimal Debian container, install the dependencies
 and run the build process in the docker container, instead of your local OS.
-That way, you can easily run thsi on non-Debian systems like Arch, Fedora etc.
+That way, you can easily run this on non-Debian systems like Arch, Fedora etc.
 Please note that the output files of the docker build are owned by root, so you
-need to clean up wiht `sudo make clean` afterwards.
+need to clean up with `sudo make clean` afterwards.
 
 ## Remote Installation via ssh
 
