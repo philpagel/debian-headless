@@ -1,5 +1,6 @@
 include Makevars
-.PHONY: help install-depends config download image unpack bootconfig preseed md5 iso qemu-bios qemu-uefi usb FAT clean maintainer-clean
+.PHONY: help install-depends config download image unpack bootconfig preseed md5 \
+iso qemu-bios qemu-uefi usb FAT clean mrproper docker-image\
 
 help:
 	@echo
@@ -10,19 +11,20 @@ help:
 	@echo "  make download              download *latest* Debian netinst image"
 	@echo "  make example-preseed.cfg   download example-preseed.cfg from Debian"
 	@echo "  make image                 Build the ISO image"
+	@echo "  make docker-image          Build ISO image using a Docker container"
 	@echo "  make qemu-bios             Boot ISO image in QEMU (BIOS mode)"
 	@echo "  make qemu-uefi             Boot ISO image in QEMU (UEFI boot)"
 	@echo "  make usb                   Write ISO to USB device"
 	@echo "  make FAT                   Add a FAT partition ot the USB stick"
 	@echo "  make clean                 Clean up temporary files and folders"
-	@echo "  make maintainer-clean      Make clean and remove the output ISO"
+	@echo "  make mrproper      Make clean and remove the output ISO"
 	@echo
 	@echo "See README.md for details"
 	@echo
 
 install-depends:
 	sudo apt-get install \
-		libarchive-tools syslinux syslinux-utils cpio genisoimage \
+		wget libarchive-tools syslinux syslinux-utils cpio genisoimage \
 		coreutils qemu-system qemu-system-x86 qemu-utils util-linux
 
 config:
@@ -141,11 +143,17 @@ FAT:
 		echo "Aborting" ; \
 	fi
 
+Docker: Dockerfile
+	docker build -t debian-headless .
+
+docker-image: Docker
+	docker run --rm -w /build -v $(shell pwd):/build -it debian-headless make image
+
 clean:
 	rm -rf ${TMP}
 	rm -f image.qcow
 
-maintainer-clean: clean
+mrproper: clean
 	rm -f ${TARGET}
-	rm -f example-preseed.cfg
+	docker image rm debian-headless
 
