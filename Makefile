@@ -155,5 +155,5 @@ clean:
 
 mrproper: clean
 	rm -f ${TARGET}
-	docker image rm debian-headless
+	docker image rm -f debian-headless
 
