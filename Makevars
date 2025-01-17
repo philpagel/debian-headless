@@ -1,13 +1,13 @@
 # Configuration
 
 # Source ISO image file
-SOURCE = debian-12.8.0-amd64-netinst.iso
+SOURCE = debian-12.9.0-amd64-netinst.iso
 
 # Target ISO image file
-TARGET = debian-12.8.0-amd64-netinst-hl.iso
+TARGET = debian-12.9.0-amd64-netinst-hl.iso
 
 # Image label (must be ≤ 32 chars)
-LABEL = Debian-12.8.0-amd64-headless
+LABEL = Debian-12.9.0-amd64-headless
 
 # Machine architecture (only `amd64` or `i368` will work)
 ARCH = amd64
@@ -36,9 +36,9 @@ USBDEV = /dev/sda
 # and F is flow control ('r' for RTS). Default is
 # 9600n8. The maximum baudrate is 115200.
 # For serial console:
-#CONSOLE = ttyS0,115200n8
+CONSOLE = ttyS0,115200n8
 # For local console (normal non-headless installation):
-CONSOLE = tty0
+#CONSOLE = tty0
 
 # Folder for image unpacking
 TMP = tmp
