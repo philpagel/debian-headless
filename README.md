@@ -13,7 +13,7 @@ via ssh or serial console.
     # Edit the configuration variables
     make config
 
-    # download the latest Debian netinst image for `ARCH`
+    # download the latest Debian netinst image
     make download
 
     # Adapt preseed.cfg
@@ -97,10 +97,12 @@ At the very minimum you need to set the following variables:
 
 `TARGET` the name of the remastered ISO image.
 
-`ARCH` indicates the target processor architecture – `amd64` or `i386` (other
-architectures are not supported).  This variable is used to identify the
-installation folder in the image (`install.amd`) and to determine which
-image to download.
+`ARCH` (DEPRECATED) indicates the target processor architecture – `amd64` or
+`i386` (other architectures are not supported). This variable is used to
+identify the installation folder in the image (`install.amd`) and to determine
+which image to download. As of Debian 13, `i386` is no longer a supported
+architecture.  For the moment, I will keep the variable to support working with
+legacy versions. In the long run this option will disappear.
 
 `USBDEV` is the device file that represents your usb stick. The latter is
 needed for `make usb` and `make FAT`. Be **extra careful** to set `USBDEV`

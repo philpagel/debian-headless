@@ -1,17 +1,22 @@
 # Configuration
 
 # Source ISO image file
-SOURCE = debian-13.0.0-amd64-netinst.iso
+SOURCE = debian-13.1.0-amd64-netinst.iso
 
 # Target ISO image file
-TARGET = debian-13.0.0-amd64-netinst-hl.iso
+TARGET = debian-13.1.0-amd64-netinst-hl.iso
 
 # Image label (must be ≤ 32 chars)
-LABEL = Debian-12.11.0-amd64-headless
+LABEL = Debian-13.1.0-amd64-headless
 
-# Machine architecture (only `amd64` or `i368` will work)
+# Machine architecture 
+# As of Debian 13 (Trixie), only `amd64` is supported.
+# For legacy versions (Bookworm and earlier), you can 
+# also choose `i368`.
+# Other architectures are not supported, because they
+# use very different boot mechanisms
 ARCH = amd64
-#ARCH = i386
+#ARCH = i386    # only available for Debian 12.x an earlier
 
 # Where to find the usb drive
 # CAUTION: if set incorrectly you may ruin your system!
@@ -25,7 +30,6 @@ USBDEV = /dev/sda
 # Console configuration
 #
 # Format: DEV[,PARMS]
-# 
 # DEV: typically ttyS0, ttyS1 or ttyUSB0
 #
 # SERIALPARMS format (according to LINUX kenrel documentation):
@@ -37,8 +41,8 @@ USBDEV = /dev/sda
 # 9600n8. The maximum baudrate is 115200.
 # For serial console:
 CONSOLE = ttyS0,115200n8
-# For local console (normal non-headless installation):
-#CONSOLE = tty0
+# For local console (i.e. also offer normal non-headless installation):
+# CONSOLE = tty0
 
 # Folder for image unpacking
 TMP = tmp

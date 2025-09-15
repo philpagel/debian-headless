@@ -39,6 +39,7 @@ download:
 	wget -N $$IMGURL
 	rm -f $$TMPFILE
 
+
 example-preseed.cfg:
 	wget -N -O $@ https://www.debian.org/releases/stable/example-preseed.txt
 
