@@ -80,7 +80,7 @@ iso: ${TMP}
 		-r -J -b isolinux/isolinux.bin -c isolinux/boot.cat \
 		-no-emul-boot -boot-load-size 4 -boot-info-table \
 		-eltorito-alt-boot \
-		-e ${tmp} boot/grub/efi.img \
+		-e boot/grub/efi.img \
 		-no-emul-boot \
 		-o ${TARGET} ${TMP}
 	isohybrid --uefi ${TARGET}
